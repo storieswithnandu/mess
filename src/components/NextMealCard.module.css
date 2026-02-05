@@ -1,0 +1,71 @@
+.container {
+    padding: 1.75rem;
+    position: relative;
+    border-left: 6px solid transparent;
+}
+
+.breakfast {
+    border-left-color: var(--color-breakfast);
+}
+
+.lunch {
+    border-left-color: var(--color-lunch);
+}
+
+.snacks {
+    border-left-color: var(--color-snacks);
+}
+
+.dinner {
+    border-left-color: var(--color-dinner);
+}
+
+.topRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.icon {
+    font-size: 1.5rem;
+}
+
+.activeMeal {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1.25rem;
+    line-height: 1;
+    color: var(--text-main);
+}
+
+.itemsWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.foodTag {
+    background: var(--bg-subtle);
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.footer {
+    margin-top: 1.25rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--bg-subtle);
+    padding-top: 0.75rem;
+}

@@ -1,0 +1,76 @@
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+    /* Full width mobile */
+    gap: 1rem;
+}
+
+@media (min-width: 600px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+        /* 2 col on tablet+ */
+    }
+}
+
+.card {
+    padding: 0;
+    /* Header image style */
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.breakfast h3 {
+    color: var(--color-breakfast);
+}
+
+.lunch h3 {
+    color: var(--color-lunch);
+}
+
+.snacks h3 {
+    color: var(--color-snacks);
+}
+
+.dinner h3 {
+    color: var(--color-dinner);
+}
+
+.list {
+    padding: 1.25rem;
+    list-style: none;
+    flex-grow: 1;
+}
+
+.list li {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: flex-start;
+}
+
+.list li::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--bg-subtle);
+    margin-top: 8px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.list li:last-child {
+    margin-bottom: 0;
+}

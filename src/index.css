@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Modern Bento Palette */
+  --bg-page: #F8FAFC;
+  /* Slate 50 */
+  --bg-surface: #FFFFFF;
+  /* White */
+  --bg-subtle: #F1F5F9;
+  /* Slate 100 */
+
+  --text-main: #0F172A;
+  /* Slate 900 */
+  --text-muted: #64748B;
+  /* Slate 500 */
+
+  /* Brand/Meal Colors */
+  --color-breakfast: #FB923C;
+  /* Orange 400 */
+  --color-lunch: #10B981;
+  /* Emerald 500 */
+  --color-snacks: #8B5CF6;
+  /* Violet 500 */
+  --color-dinner: #3B82F6;
+  /* Blue 500 */
+  --color-accent: #6366F1;
+  /* Indigo 500 */
+
+  /* Bento Shadows */
+  --shadow-bento: 0 1px 3px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0, 0, 0, 0.02);
+  --shadow-float: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+#root {
+  max-width: 600px;
+  /* Mobile-first optimized width */
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* Bento Card Utility */
+.bento-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-bento);
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bento-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-float);
+}
+
+h1,
+h2,
+h3,
+h4,
+button {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Scrollbar Hide */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
