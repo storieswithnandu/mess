@@ -184,6 +184,24 @@ function App() {
         <DailyMenuCard day={activeDay} weekParity={weekParity} />
       </motion.div>
 
+      {/* Footer */}
+      <footer style={{
+        marginTop: '3rem',
+        paddingBottom: '2rem',
+        textAlign: 'center',
+        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+        paddingTop: '1.5rem'
+      }}>
+        <p style={{
+          color: 'var(--text-muted)',
+          fontSize: '0.8rem',
+          fontWeight: 500,
+          opacity: 0.8
+        }}>
+          💡 Always cross-check with official data
+        </p>
+      </footer>
+
     </div>
   );
 }
