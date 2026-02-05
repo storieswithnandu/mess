@@ -16,8 +16,12 @@ export const NextMealCard = ({ day, weekParity }: NextMealCardProps) => {
         return () => clearInterval(timer);
     }, []);
 
+    const daysList: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const currentDayIndex = daysList.indexOf(day);
+    const targetDay = currentMeal.type === 'Next Day' ? daysList[currentDayIndex + 1] : day;
+
     const menu = weekParity === 'odd' ? week1Menu : week2Menu;
-    const todayMenu = menu[day];
+    const itemsMenu = menu[targetDay];
 
     let displayMealType = currentMeal.type;
     let label = "Happening Now";
@@ -29,7 +33,7 @@ export const NextMealCard = ({ day, weekParity }: NextMealCardProps) => {
         label = "Up Next";
     }
 
-    const items = todayMenu[displayMealType as keyof DailyMenu] || [];
+    const items = itemsMenu[displayMealType as keyof DailyMenu] || [];
     const extras = commonItems[displayMealType as keyof typeof commonItems] || [];
 
     return (
