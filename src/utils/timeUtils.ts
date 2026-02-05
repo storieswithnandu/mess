@@ -3,16 +3,45 @@ import type { DayOfWeek, MealType } from "../data/menu";
 
 export function getCurrentMeal(): { type: MealType | 'Next Day'; isActive: boolean } {
     const now = new Date();
-    const hour = now.getHours();
-    // const hour = 13; // Debug
+    const day = now.getDay();
+    const timeInMinutes = now.getHours() * 60 + now.getMinutes();
 
-    if (hour < 10) return { type: 'Breakfast', isActive: hour >= 7 };
-    if (hour < 15) return { type: 'Lunch', isActive: hour >= 12 }; // Extended window to show 'Lunch' until late afternoon
-    if (hour < 19) return { type: 'Snacks', isActive: hour >= 16 };
-    if (hour < 22) return { type: 'Dinner', isActive: hour >= 19 };
+    const isWeekend = day === 0 || day === 6;
+
+    // Dinner ends at 9:00 PM (21:00)
+    if (timeInMinutes >= 21 * 60) return { type: 'Next Day', isActive: false };
+
+    // Breakfast: Mon-Fri (7:20-9:30), Sat-Sun (8:00-10:00)
+    const bStart = isWeekend ? 8 * 60 : 7 * 60 + 20;
+    const bEnd = isWeekend ? 10 * 60 : 9 * 60 + 30;
+    if (timeInMinutes < bEnd) {
+        return { type: 'Breakfast', isActive: timeInMinutes >= bStart };
+    }
+
+    // Lunch: 12:00-2:15 (14:15)
+    const lStart = 12 * 60;
+    const lEnd = 14 * 60 + 15;
+    if (timeInMinutes < lEnd) {
+        return { type: 'Lunch', isActive: timeInMinutes >= lStart };
+    }
+
+    // Snacks: 4:30 (16:30)-6:00 (18:00)
+    const sStart = 16 * 60 + 30;
+    const sEnd = 18 * 60;
+    if (timeInMinutes < sEnd) {
+        return { type: 'Snacks', isActive: timeInMinutes >= sStart };
+    }
+
+    // Dinner: 7:00 (19:00)-9:00 (21:00)
+    const dStart = 19 * 60;
+    const dEnd = 21 * 60;
+    if (timeInMinutes < dEnd) {
+        return { type: 'Dinner', isActive: timeInMinutes >= dStart };
+    }
 
     return { type: 'Next Day', isActive: false };
 }
+
 
 export function getCurrentDay(): DayOfWeek {
     const days: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];

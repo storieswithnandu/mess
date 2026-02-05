@@ -24,14 +24,13 @@ export const NextMealCard = ({ day, weekParity }: NextMealCardProps) => {
     const itemsMenu = menu[targetDay];
 
     let displayMealType = currentMeal.type;
-    let label = "Happening Now";
+    let label = "Next Meal";
 
     if (currentMeal.type === 'Next Day') {
         displayMealType = 'Breakfast';
         label = "Tomorrow Morning";
-    } else if (!currentMeal.isActive) {
-        label = "Up Next";
     }
+
 
     const items = itemsMenu[displayMealType as keyof DailyMenu] || [];
     const extras = commonItems[displayMealType as keyof typeof commonItems] || [];
