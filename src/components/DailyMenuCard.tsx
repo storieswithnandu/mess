@@ -27,6 +27,11 @@ export const DailyMenuCard = ({ day, weekParity }: DailyMenuProps) => {
                                 <li key={idx}>{item}</li>
                             ))}
                         </ul>
+                        {extras && extras.length > 0 && (
+                            <div className={styles.extras}>
+                                + {extras.join(", ")}
+                            </div>
+                        )}
                     </div>
                 );
             })}

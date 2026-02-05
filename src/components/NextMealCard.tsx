@@ -52,7 +52,7 @@ export const NextMealCard = ({ day, weekParity }: NextMealCardProps) => {
 
             <div className={styles.itemsWrapper}>
                 {items.length > 0 ? (
-                    items.map((item, id) => (
+                    items.map((item: string, id: number) => (
                         <span key={id} className={styles.foodTag}>{item}</span>
                     ))
                 ) : (
