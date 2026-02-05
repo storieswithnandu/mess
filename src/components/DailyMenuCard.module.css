@@ -13,10 +13,22 @@
 }
 
 .card {
-    padding: 0;
-    /* Header image style */
+    padding-bottom: 3.5rem;
+    /* Space for the absolute footer if needed, or just let it grow */
+    position: relative;
     display: flex;
     flex-direction: column;
+    min-height: 180px;
+}
+
+.extras {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    line-height: 1.4;
 }
 
 .header {
