@@ -98,7 +98,7 @@ function App() {
       </div>
 
       {/* Bus Toggle */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
         <button
           onClick={() => setShowBusSchedule(!showBusSchedule)}
           style={{
@@ -120,28 +120,6 @@ function App() {
         >
           {showBusSchedule ? 'Hide' : 'Show'} Bus Schedule 🚌
         </button>
-
-        <button
-          onClick={() => setShowExtraBuses(!showExtraBuses)}
-          style={{
-            background: 'var(--bg-surface)',
-            color: 'var(--text-main)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            padding: '0.6rem 1.2rem',
-            borderRadius: 'var(--radius-md)',
-            fontWeight: 700,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            boxShadow: 'var(--shadow-bento)',
-            transition: 'all 0.2s ease',
-            fontSize: '0.9rem',
-            borderColor: showExtraBuses ? 'var(--color-accent)' : 'rgba(255, 255, 255, 0.1)'
-          }}
-        >
-          {showExtraBuses ? 'Hide' : 'Show'} Extra Buses 📍
-        </button>
       </div>
 
       <AnimatePresence>
@@ -154,20 +132,44 @@ function App() {
             style={{ overflow: 'hidden' }}
           >
             <BusScheduleCard day={activeDay} />
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      <AnimatePresence>
-        {showExtraBuses && (
-          <motion.div
-            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-            animate={{ opacity: 1, height: 'auto', marginBottom: '2rem' }}
-            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{ overflow: 'hidden' }}
-          >
-            <ExtraBusCard day={activeDay} />
+            {/* Nested Extra Buses Toggle */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+              <button
+                onClick={() => setShowExtraBuses(!showExtraBuses)}
+                style={{
+                  background: 'var(--bg-subtle)',
+                  color: 'var(--text-main)',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                  padding: '0.5rem 1rem',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  transition: 'all 0.2s ease',
+                  borderColor: showExtraBuses ? 'var(--color-accent)' : 'rgba(255, 255, 255, 0.05)'
+                }}
+              >
+                {showExtraBuses ? 'Hide' : 'Show'} Extra Buses (Palakkad/Wise Park) 📍
+              </button>
+            </div>
+
+            <AnimatePresence>
+              {showExtraBuses && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                  animate={{ opacity: 1, height: 'auto', marginTop: '1rem' }}
+                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                  transition={{ duration: 0.3 }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  <ExtraBusCard day={activeDay} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
