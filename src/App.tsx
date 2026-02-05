@@ -4,12 +4,14 @@ import { getWeekParity, getFormatDate } from './utils/timeUtils';
 import { NextMealCard } from './components/NextMealCard';
 import { DailyMenuCard } from './components/DailyMenuCard';
 import { BusScheduleCard } from './components/BusScheduleCard';
+import { ExtraBusCard } from './components/ExtraBusCard';
 import type { DayOfWeek } from './data/menu';
 
 function App() {
   const [weekParity] = useState<'odd' | 'even'>(getWeekParity());
   const [view, setView] = useState<'today' | 'tomorrow'>('today');
   const [showBusSchedule, setShowBusSchedule] = useState(false);
+  const [showExtraBuses, setShowExtraBuses] = useState(false);
 
   // Date Calculation
   const days: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -96,7 +98,7 @@ function App() {
       </div>
 
       {/* Bus Toggle */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
         <button
           onClick={() => setShowBusSchedule(!showBusSchedule)}
           style={{
@@ -112,18 +114,33 @@ function App() {
             gap: '0.5rem',
             boxShadow: 'var(--shadow-bento)',
             transition: 'all 0.2s ease',
-            fontSize: '0.9rem'
-          }}
-          onMouseOver={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-accent)';
-            (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)';
-          }}
-          onMouseOut={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255, 255, 255, 0.1)';
-            (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
+            fontSize: '0.9rem',
+            borderColor: showBusSchedule ? 'var(--color-accent)' : 'rgba(255, 255, 255, 0.1)'
           }}
         >
           {showBusSchedule ? 'Hide' : 'Show'} Bus Schedule 🚌
+        </button>
+
+        <button
+          onClick={() => setShowExtraBuses(!showExtraBuses)}
+          style={{
+            background: 'var(--bg-surface)',
+            color: 'var(--text-main)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            padding: '0.6rem 1.2rem',
+            borderRadius: 'var(--radius-md)',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: 'var(--shadow-bento)',
+            transition: 'all 0.2s ease',
+            fontSize: '0.9rem',
+            borderColor: showExtraBuses ? 'var(--color-accent)' : 'rgba(255, 255, 255, 0.1)'
+          }}
+        >
+          {showExtraBuses ? 'Hide' : 'Show'} Extra Buses 📍
         </button>
       </div>
 
@@ -137,6 +154,20 @@ function App() {
             style={{ overflow: 'hidden' }}
           >
             <BusScheduleCard day={activeDay} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showExtraBuses && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginBottom: '2rem' }}
+            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{ overflow: 'hidden' }}
+          >
+            <ExtraBusCard day={activeDay} />
           </motion.div>
         )}
       </AnimatePresence>

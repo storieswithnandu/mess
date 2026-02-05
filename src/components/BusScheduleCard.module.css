@@ -92,3 +92,43 @@
         grid-template-columns: 1fr;
     }
 }
+
+.extraList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.extraItem {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-subtle);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.extraTime {
+    font-weight: 800;
+    color: var(--color-accent);
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+.extraInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.extraLabel {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+.extraRoute {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
