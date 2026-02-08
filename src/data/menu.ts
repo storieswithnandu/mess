@@ -65,7 +65,7 @@ export const week1Menu: Record<DayOfWeek, DailyMenu> = {
 export const week2Menu: Record<DayOfWeek, DailyMenu> = {
     Monday: {
         Breakfast: ["Aloo Paratha", "Ketchup", "Curd", "Mint Chutney"],
-        Lunch: ["Phulka", "Ghee Rice", "Aloo Chana Masala", "Soya Chilly"],
+        Lunch: ["Phulka", "Ghee Rice", "Aloo Chana Masala", "Soya Chilly", "Sambar"],
         Snacks: ["Macaroni"],
         Dinner: ["Paneer/Egg Biryani", "Raita", "Mutter Masala", "Phulka"]
     },
