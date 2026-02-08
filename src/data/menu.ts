@@ -19,7 +19,7 @@ export const commonItems = {
 export const week1Menu: Record<DayOfWeek, DailyMenu> = {
     Monday: {
         Breakfast: ["Aloo Paratha", "Ketchup", "Curd", "Mint Chutney"],
-        Lunch: ["Phulka", "White Rice", "Kerala Rice", "Chana Masala", "Arhar Dal"],
+        Lunch: ["Phulka", "White Rice", "Kerala Rice", "Chana Masala", "Arhar Dal", "Sambar", "Chutney", "Curd"],
         Snacks: ["Onion Kachori", "Ketchup", "Fried Chilly"],
         Dinner: ["Fried Rice", "Phulka", "Dal Tadka", "Gobhi Manchurian"]
     },
