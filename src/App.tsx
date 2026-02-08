@@ -8,7 +8,6 @@ import { ExtraBusCard } from './components/ExtraBusCard';
 import type { DayOfWeek } from './data/menu';
 
 function App() {
-  const [weekParity] = useState<'odd' | 'even'>(getWeekParity());
   const [view, setView] = useState<'today' | 'tomorrow'>('today');
   const [showBusSchedule, setShowBusSchedule] = useState(false);
   const [showExtraBuses, setShowExtraBuses] = useState(false);
@@ -16,6 +15,10 @@ function App() {
   // Date Calculation
   const days: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const now = new Date();
+
+  // Calculate target date based on view
+  const targetDate = view === 'today' ? now : new Date(now.getTime() + 86400000);
+
   const todayIndex = now.getDay();
   const tomorrowIndex = (todayIndex + 1) % 7;
 
@@ -23,8 +26,9 @@ function App() {
   const tomorrow = days[tomorrowIndex];
 
   const activeDay = view === 'today' ? today : tomorrow;
-  // Note: For strict accuracy, if tomorrow is Monday, week parity might flip. 
-  // For this version, keeping parity consistent for simplicity unless critical.
+
+  // Dynamic Week Parity based on the VIEWED date
+  const weekParity = getWeekParity(targetDate);
 
   return (
     <div className="app-container">
