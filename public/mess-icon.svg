@@ -1,17 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
-  <!-- Background -->
-  <rect width="100" height="100" rx="22" fill="#0F172A"/>
+  <!-- Background: Soft Light Slate -->
+  <rect width="100" height="100" rx="24" fill="#F8FAFC"/>
   
-  <!-- Food/Mess Part (Left Side - Bowl) -->
-  <path d="M15 45 C15 65, 30 75, 45 75 L45 40 L15 40 Z" fill="#F8FAFC"/>
-  <path d="M22 35 C22 25, 26 20, 26 20" stroke="#F8FAFC" stroke-width="3" stroke-linecap="round"/>
-  <path d="M38 35 C38 25, 42 20, 42 20" stroke="#F8FAFC" stroke-width="3" stroke-linecap="round"/>
+  <!-- Subtle Gradient Border -->
+  <rect x="2" y="2" width="96" height="96" rx="22" stroke="url(#paint0_linear)" stroke-width="4" opacity="0.3"/>
+  
+  <!-- Food Section: Stylized Warm Amber Plate -->
+  <circle cx="35" cy="50" r="22" fill="#FEF3C7"/>
+  <path d="M35 38V62" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+  <path d="M28 42V58M42 42V58" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Bus Section: Soft Blue Modern Front -->
+  <rect x="58" y="38" width="28" height="24" rx="6" fill="#EFF6FF"/>
+  <rect x="61" y="42" width="22" height="10" rx="2" fill="#3B82F6"/>
+  <circle cx="66" cy="62" r="3" fill="#3B82F6"/>
+  <circle cx="78" cy="62" r="3" fill="#3B82F6"/>
+  <rect x="63" y="62" width="12" height="2" fill="#3B82F6" opacity="0.5"/>
 
-  <!-- Bus Part (Right Side - Silhouette) -->
-  <rect x="55" y="40" width="30" height="25" rx="3" fill="#F8FAFC"/>
-  <rect x="58" y="44" width="8" height="8" rx="1" fill="#0F172A"/>
-  <rect x="74" y="44" width="8" height="8" rx="1" fill="#0F172A"/>
-  <rect x="55" y="60" width="30" height="5" fill="#F8FAFC"/>
-  <circle cx="62" cy="68" r="3" fill="#F8FAFC"/>
-  <circle cx="78" cy="68" r="3" fill="#F8FAFC"/>
+  <!-- Defining Gradients -->
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
 </svg>
