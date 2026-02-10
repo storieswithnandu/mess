@@ -91,11 +91,8 @@ export const BusScheduleCard: React.FC<BusScheduleCardProps> = ({ day }) => {
         return mappedWithMinutes.filter(item => item.mins >= currentMinutes);
     };
 
-    const activeList = selectedRoute === 'N->S'
-        ? getUpcomingBuses(schedule.nilaToSahyadri)
-        : selectedRoute === 'S->N'
-            ? getUpcomingBuses(schedule.sahyadriToNila)
-            : [];
+    const activeListNS = getUpcomingBuses(schedule.nilaToSahyadri);
+    const activeListSN = getUpcomingBuses(schedule.sahyadriToNila);
 
     return (
         <div className={styles.cardContainer}>
@@ -106,47 +103,59 @@ export const BusScheduleCard: React.FC<BusScheduleCardProps> = ({ day }) => {
                 <div className={styles.dayBadge}>{dayType}</div>
             </div>
 
-            {/* Toggle Buttons */}
-            <div className={styles.toggleContainer}>
+            <div className={styles.accordionContainer}>
+                {/* Nila -> Sahyadri Section */}
                 <button
-                    className={`${styles.toggleBtn} ${selectedRoute === 'N->S' ? styles.active : ''}`}
-                    onClick={() => setSelectedRoute('N->S')}
+                    className={`${styles.routeButton} ${selectedRoute === 'N->S' ? styles.active : ''}`}
+                    onClick={() => setSelectedRoute(selectedRoute === 'N->S' ? null : 'N->S')}
                 >
-                    Nila ➔ Sahyadri
+                    <div className={styles.routeIcon}>N ➔ S</div>
+                    <div className={styles.routeLabel}>Nila to Sahyadri</div>
+                    <div className={styles.expandIcon}>{selectedRoute === 'N->S' ? '−' : '+'}</div>
                 </button>
-                <button
-                    className={`${styles.toggleBtn} ${selectedRoute === 'S->N' ? styles.active : ''}`}
-                    onClick={() => setSelectedRoute('S->N')}
-                >
-                    Sahyadri ➔ Nila
-                </button>
-            </div>
 
-            {/* List */}
-            <div className={styles.listContainer}>
-                {!selectedRoute && (
-                    <div className={styles.placeholder}>
-                        Select a route to view buses
+                {selectedRoute === 'N->S' && (
+                    <div className={styles.listContainer}>
+                        {activeListNS.length === 0 && (
+                            <div className={styles.emptyState}>No more buses today 🌙</div>
+                        )}
+                        {activeListNS.map((entry, index) => (
+                            <div key={index} className={styles.timeItem}>
+                                <span className={styles.time}>{entry.time}</span>
+                                {entry.isMultiple && <span className={styles.multipleMarker}>(Multiple)</span>}
+                            </div>
+                        ))}
                     </div>
                 )}
 
-                {selectedRoute && activeList.length === 0 && (
-                    <div className={styles.emptyState}>
-                        No more buses today 🌙
+                {/* Sahyadri -> Nila Section */}
+                <button
+                    className={`${styles.routeButton} ${selectedRoute === 'S->N' ? styles.active : ''}`}
+                    onClick={() => setSelectedRoute(selectedRoute === 'S->N' ? null : 'S->N')}
+                >
+                    <div className={styles.routeIcon}>S ➔ N</div>
+                    <div className={styles.routeLabel}>Sahyadri to Nila</div>
+                    <div className={styles.expandIcon}>{selectedRoute === 'S->N' ? '−' : '+'}</div>
+                </button>
+
+                {selectedRoute === 'S->N' && (
+                    <div className={styles.listContainer}>
+                        {activeListSN.length === 0 && (
+                            <div className={styles.emptyState}>No more buses today 🌙</div>
+                        )}
+                        {activeListSN.map((entry, index) => (
+                            <div key={index} className={styles.timeItem}>
+                                <span className={styles.time}>{entry.time}</span>
+                                {entry.isMultiple && <span className={styles.multipleMarker}>(Multiple)</span>}
+                            </div>
+                        ))}
                     </div>
                 )}
-
-                {selectedRoute && activeList.map((entry, index) => (
-                    <div key={index} className={styles.timeItem}>
-                        <span className={styles.time}>{entry.time}</span>
-                        {entry.isMultiple && <span className={styles.multipleMarker}>(Multiple)</span>}
-                    </div>
-                ))}
             </div>
 
             {/* Disclaimer for full reset */}
             {!selectedRoute && (
-                <p className={styles.hint}>* Schedules refresh daily</p>
+                <p className={styles.hint}>Click a route to view upcoming buses</p>
             )}
         </div>
     );

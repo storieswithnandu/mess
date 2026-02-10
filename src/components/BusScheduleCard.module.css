@@ -34,39 +34,78 @@
     text-transform: uppercase;
 }
 
-.toggleContainer {
+.accordionContainer {
     display: flex;
+    flex-direction: column;
     gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    background: rgba(0, 0, 0, 0.03);
-    padding: 0.35rem;
-    border-radius: var(--radius-md);
 }
 
-.toggleBtn {
-    flex: 1;
-    border: none;
-    background: transparent;
-    padding: 0.75rem 0.5rem;
-    border-radius: var(--radius-sm);
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: var(--text-muted);
+.routeButton {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-subtle);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    width: 100%;
     cursor: pointer;
     transition: all 0.2s ease;
+    text-align: left;
+    color: var(--text-main);
 }
 
-.toggleBtn.active {
+.routeButton:hover {
     background: var(--bg-surface);
+    border-color: rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.routeButton.active {
+    border-color: var(--color-accent);
+    background: var(--bg-surface);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.routeIcon {
+    font-weight: 800;
+    font-size: 0.9rem;
     color: var(--color-accent);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--radius-sm);
+}
+
+.routeLabel {
+    flex: 1;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.expandIcon {
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--text-muted);
 }
 
 .listContainer {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    min-height: 100px;
+    padding: 0 0.5rem 1rem 0.5rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .placeholder,
@@ -74,7 +113,7 @@
     text-align: center;
     color: var(--text-muted);
     font-style: italic;
-    padding: 2rem 0;
+    padding: 1rem 0;
     font-size: 0.9rem;
 }
 
