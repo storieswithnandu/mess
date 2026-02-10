@@ -67,11 +67,7 @@ export const BusScheduleCard: React.FC<BusScheduleCardProps> = ({ day }) => {
     };
 
     const getUpcomingBuses = (routeItems: BusEntry[]) => {
-        const isToday = new Date().toDateString() === new Date().toDateString(); // Simplified check, assumes 'day' prop is strictly calendar day?
-        // Actually, 'day' prop comes from App's 'activeDay'. 
-        // If activeDay != Today, we should show ALL items (reset).
-
-        const now = new Date();
+        const now = currentTime; // Use state to sync with re-renders
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const viewDayIndex = days.indexOf(day);
         const currentDayIndex = now.getDay();
