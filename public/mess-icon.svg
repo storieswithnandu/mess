@@ -1,7 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
-  <rect width="100" height="100" rx="20" fill="#0F172A"/>
-  <path d="M20 50 C20 75, 40 85, 50 85 C60 85, 80 75, 80 50 L80 40 L20 40 Z" fill="#F8FAFC"/>
-  <path d="M30 35 C30 20, 35 15, 35 15" stroke="#F8FAFC" stroke-width="4" stroke-linecap="round"/>
-  <path d="M50 35 C50 15, 55 10, 55 10" stroke="#F8FAFC" stroke-width="4" stroke-linecap="round"/>
-  <path d="M70 35 C70 20, 75 15, 75 15" stroke="#F8FAFC" stroke-width="4" stroke-linecap="round"/>
+  <!-- Background -->
+  <rect width="100" height="100" rx="22" fill="#0F172A"/>
+  
+  <!-- Food/Mess Part (Left Side - Bowl) -->
+  <path d="M15 45 C15 65, 30 75, 45 75 L45 40 L15 40 Z" fill="#F8FAFC"/>
+  <path d="M22 35 C22 25, 26 20, 26 20" stroke="#F8FAFC" stroke-width="3" stroke-linecap="round"/>
+  <path d="M38 35 C38 25, 42 20, 42 20" stroke="#F8FAFC" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Bus Part (Right Side - Silhouette) -->
+  <rect x="55" y="40" width="30" height="25" rx="3" fill="#F8FAFC"/>
+  <rect x="58" y="44" width="8" height="8" rx="1" fill="#0F172A"/>
+  <rect x="74" y="44" width="8" height="8" rx="1" fill="#0F172A"/>
+  <rect x="55" y="60" width="30" height="5" fill="#F8FAFC"/>
+  <circle cx="62" cy="68" r="3" fill="#F8FAFC"/>
+  <circle cx="78" cy="68" r="3" fill="#F8FAFC"/>
 </svg>
