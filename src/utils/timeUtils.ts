@@ -50,7 +50,7 @@ export function getCurrentDay(): DayOfWeek {
 
 export function getWeekParity(date: Date = new Date()): 'odd' | 'even' {
     // Anchor: Mon Feb 2, 2026 is start of "Week 2/4" (Even).
-    const anchorDate = new Date('2026-02-02T00:00:00');
+    const anchorDate = new Date('2026-09-14T00:00:00');
 
     // Calculate difference in milliseconds
     const diffTime = date.getTime() - anchorDate.getTime();

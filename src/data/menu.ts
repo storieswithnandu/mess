@@ -9,100 +9,100 @@ export interface DailyMenu {
 }
 
 export const commonItems = {
-    Breakfast: ["Bread", "Butter", "Jam", "Milk", "Tea", "Coffee"],
-    Lunch: ["Pickle", "Papad", "Salad"],
-    Snacks: ["Tea", "Coffee"],
-    Dinner: ["Salad", "Pickle"]
+    Breakfast: ["Tea", "Coffee", "Milk", "Bournvita", "Cornflakes", "Oats", "Bread", "Butter", "Jam", "Sprouts", "Fruits", "Egg"],
+    Lunch: ["Salad", "Pickle", "Papad", "Curd", "Pulka Roti", "Ghee Roti", "Steam Rice", "Kerala Rice"],
+    Snacks: ["Tea", "Coffee", "Pay Snacks"],
+    Dinner: ["Salad", "Pickle", "Papad", "Pulka Roti", "Steam Rice", "Kerala Rice"]
 };
 
 // Week 1 & 3
 export const week1Menu: Record<DayOfWeek, DailyMenu> = {
     Monday: {
-        Breakfast: ["Aloo Paratha", "Ketchup", "Curd", "Mint Chutney"],
-        Lunch: ["Phulka", "White Rice", "Kerala Rice", "Chana Masala", "Arhar Dal", "Sambar", "Chutney", "Curd"],
-        Snacks: ["Onion Kachori", "Ketchup", "Fried Chilly"],
-        Dinner: ["Fried Rice", "Phulka", "Dal Tadka", "Gobhi Manchurian"]
+        Breakfast: ["Idli", "Wada", "Sambhar", "Chatni", "Boiled Egg / Banana", "Boiled Peanut", "Cornflakes"],
+        Lunch: ["Padwal Chana Dry", "Aloo Tomato Raswala", "Jeera Rice", "Dal Makhani", "Sambhar", "Fresh Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Cabbage Thoran", "Gobi Mutter Masala", "Steam Rice", "Dal Fry", "Rasam", "Sweet: Seviya Kheer"]
     },
     Tuesday: {
-        Breakfast: ["Masala Dosa", "Tomato Chutney", "Sambar"],
-        Lunch: ["Puri", "Aloo Palak", "Ridge Gourd", "White Rice", "Kerala Rice"],
-        Snacks: ["Aloo Bonda", "Tomato Ketchup"],
-        Dinner: ["Phulka", "Chole Masala", "Jeera Rice", "Dal", "Ice Cream"]
+        Breakfast: ["Poori Bhaji / Puttu", "Kadala Curry", "Boiled Egg / Watermelon", "Sprouted Moong", "Bournvita"],
+        Lunch: ["Mixveg Dry", "Dal Khichdi", "Dahi Kadi Pakoda", "Sambhar", "Flavoured Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Paneer Mutter Masala", "Tomato Rice", "Dal Pancharatna", "Rasam", "Sweet: Ice Cream"]
     },
     Wednesday: {
-        Breakfast: ["Dal Kichdi", "Coconut Chutney", "Dahi Boondi", "Peanut Butter"],
-        Lunch: ["Chapathi", "White Rice", "Greenpeas Masala", "Kerala Rice"],
-        Snacks: ["Green Matar Chat"],
-        Dinner: ["Hyderabadi Paneer/Chicken", "White Rice", "Moong Dal", "Paratha"]
+        Breakfast: ["Podi Dosa", "Chatni", "Sambhar", "Boiled Egg / Banana", "Boiled Chana", "Oats"],
+        Lunch: ["Aloo Bhindi Dry", "Rajma Masala", "Tadka Rice", "Dal Kolhapuri", "Sambhar", "Fresh Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Paneer Kadai / Chicken Kadai", "Dudhi Chana Dry", "Steam Rice", "Dal Methi", "Rasam", "Sweet: Gulab Jamun"]
     },
     Thursday: {
-        Breakfast: ["Puri", "Chana Masala"],
-        Lunch: ["Chapathi", "White Rice", "Mix Dal", "Malai Kofta", "Bottle Gourd"],
-        Snacks: ["Tikki Chat"],
-        Dinner: ["Spl Dal", "Sambar", "Masala Dosa", "Tomato Chutney"]
+        Breakfast: ["Poha & Upma", "Chatni", "Omlette / Cut Fruits", "Mix Sprouts", "Cornflakes"],
+        Lunch: ["Aloo Jeera Dry", "Chole Masala", "Poori", "Lemon Rice", "Dal Tadka", "More Curry", "Flavoured Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Tendli Chana (Kovaka) Dry", "Egg Curry / Corn Capsicum", "Mushroom Masala", "Steam Rice", "Dal Palak", "Rasam", "Sweet: Pineapple Sheera"]
     },
     Friday: {
-        Breakfast: ["Fried Idly", "Vada", "Sambar", "Coconut Chutney"],
-        Lunch: ["Phulka", "White Rice", "Kadai Veg", "Sambar", "Potato Cabbage"],
-        Snacks: ["Pungulu", "Coconut Chutney"],
-        Dinner: ["Chicken Gravy / Paneer Butter Masala", "Mix Dal", "Chapathi"]
+        Breakfast: ["Pav Bhaji", "Vellappam with Veg Stew", "Boiled Egg / Banana", "Sprout", "Bournvita"],
+        Lunch: ["Carrot Aloo Beans Dry", "Sprouted Mix Curry", "Steam Rice", "Dal Fry", "Methi Paratha", "Sambhar", "Fresh Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Cabbage Poriyal", "Paneer Kolhapuri / Chicken Kolhapuri", "Ghee Rice", "Mix Dal", "Sweet: Burfi / Laddu"]
     },
     Saturday: {
-        Breakfast: ["Gobi Mix Veg Paratha", "Ketchup", "Green Coriander Chutney"],
-        Lunch: ["Chapathi", "White Rice", "Rajma Masala", "Green Veg", "Ginger Dal"],
-        Snacks: ["Samosa", "Ketchup", "Cold Coffee"],
-        Dinner: ["Phulka", "Green Peas Masala", "White Rice", "Raw Banana Poriyal"]
+        Breakfast: ["Aloo Paratha / Seviya Upma", "Curd / Green Chatni", "Boiled Egg / Banana", "Oats", "Sprout"],
+        Lunch: ["Chana Masala", "Veg Pulao", "Veg Raitha", "Dal Fry", "Buttermilk", "Rasam", "Flavoured Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Aloo Capsicum Dry", "Soyabean Mutter Masala", "Tadka Rice", "Yellow Dal Tadka", "Sambhar", "Sweet: Payasam"]
     },
     Sunday: {
-        Breakfast: ["Onion Rava Dosa", "Tomato Chutney", "Sambar"],
-        Lunch: ["Chicken Dum Biryani / Chilli Paneer", "Shorba Masala", "Raita"],
-        Snacks: ["Vada Pav", "Fried Green Chilly"],
-        Dinner: ["Arhar Dal Tadka", "Aloo Fry", "Kadhi Pakoda", "Rice", "Chapati", "Gulab Jamun"]
+        Breakfast: ["Masala Dosa", "Sambhar", "Chatni", "Boiled Egg / Banana", "Cornflakes", "Sprout"],
+        Lunch: ["Veg with Paneer Biriyani / Chicken Biriyani", "Raitha", "Beetroot Dry", "Dal Tadka", "Lime Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Raw Banana Dry", "Aloo Mutter Gravy", "Steam Rice", "Dal Fry", "Triangle Paratha", "Sambhar", "Sweet: Fruit Custard"]
     }
 };
 
 // Week 2 & 4
 export const week2Menu: Record<DayOfWeek, DailyMenu> = {
     Monday: {
-        Breakfast: ["Aloo Paratha", "Ketchup", "Curd", "Mint Chutney"],
-        Lunch: ["Phulka", "Ghee Rice", "Aloo Chana Masala", "Soya Chilly", "Sambar"],
-        Snacks: ["Macaroni"],
-        Dinner: ["Paneer/Egg Biryani", "Raita", "Mutter Masala", "Phulka"]
+        Breakfast: ["Idli", "Wada", "Sambhar", "Chatni", "Boiled Egg / Banana", "Boiled Black Chana", "Cornflakes"],
+        Lunch: ["Whole Pulses Dry", "Dahi Bhindi Masala", "Dal Pappu", "Sambhar", "Fresh Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Cabbage Mutter Dry", "Veg Kofta Curry", "Chana Dal Masala", "Rasam", "Sweet: Seviya Kheer"]
     },
     Tuesday: {
-        Breakfast: ["Upma", "Vada", "Coriander Chutney", "Curd"],
-        Lunch: ["Chola", "Bhatura", "Toor Dal Fry", "Green Mix Veg", "Lemon Rice"],
-        Snacks: ["Dahi Papdi Chat"],
-        Dinner: ["Phulka", "White Rice", "Methi Dal", "Mix Veg", "Ice Cream"]
+        Breakfast: ["Poori Bhaji / Nool Puttu", "Kadala Curry", "Boiled Egg / Watermelon", "Sprouted Moong", "Bournvita"],
+        Lunch: ["Veg Kolhapuri", "Tomato Rice", "Raita", "Dal Tadka", "Sambhar", "Flavoured Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Aloo Green Chawli Dry", "Mutter Paneer", "Rice", "Dal Fry", "Rasam", "Sweet: Ice Cream"]
     },
     Wednesday: {
-        Breakfast: ["Puttu", "Kadal Curry", "Peanut Butter"],
-        Lunch: ["Chapathi", "Methi Dal", "Drumstick Gravy", "Dondakaya Dry"],
-        Snacks: ["Mysore Bonda"],
-        Dinner: ["Kadai Chicken / Paneer", "Pulao", "Mix Dal", "Butter Naan"]
+        Breakfast: ["Set Dosa", "Red Chatni", "Sambhar", "Boiled Egg / Banana", "Sprout", "Oats"],
+        Lunch: ["Mix Veg Dry", "Methi Malai Mutter", "Triangle Paratha", "Steam Rice", "Dal", "Sambhar", "Jaljeera"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Beetroot Poriyal", "Paneer Kolhapuri / Chicken Kolhapuri", "Green Peas Pulao", "Dal", "Rasam", "Sweet: Gulab Jamun"]
     },
     Thursday: {
-        Breakfast: ["Mini Chola Bhatura", "Seasonal Fruit"],
-        Lunch: ["Chapathi", "Mutter Paneer", "Coriander Rice", "Kollu Rasam"],
-        Snacks: ["Cutlet", "Tomato Ketchup"],
-        Dinner: ["Arhar Dal Tadka", "Aloo Fry", "Kadhi Pakoda", "White Rice"]
+        Breakfast: ["Poha & Upma", "Chatni", "Omlette / Cut Fruits", "Sprout", "Cornflakes"],
+        Lunch: ["Aloo Methi / Aloo Jeera", "Chole Masala", "Poori", "Dal Fry", "Lemon Rice", "More Curry", "Dal", "Rasam", "Flavoured Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Padwal Chana Dry", "Egg Masala / Corn Capsicum", "Mushroom Masala", "Snake Gourd Dry", "Sweet: Pineapple Sheera"]
     },
     Friday: {
-        Breakfast: ["Podi Dosa", "Sambar", "Tomato Chutney", "Peanut Butter"],
-        Lunch: ["Phulka", "Navadhanya Masala", "Sambar", "Green Mix Veg"],
-        Snacks: ["Pani Puri"],
-        Dinner: ["Chicken Gravy / Paneer Butter Masala", "Mix Dal", "Chapathi", "Sheera"]
+        Breakfast: ["Pav Bhaji", "Vellappam with Veg Stew", "Boiled Egg / Banana", "Boiled Black Chana", "Bournvita"],
+        Lunch: ["Veg Soya Chunk", "Rajma Masala", "Jeera Rice", "Dal Palak", "Sambhar", "Fresh Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Cabbage Poriyal", "Chicken Kebab with Curry / Paneer Tikka Masala", "Dal Lasooni Tadka", "Sweet: Burfi / Laddu"]
     },
     Saturday: {
-        Breakfast: ["Mix-veg Paratha", "Mint Chutney", "Curd", "Ketchup"],
-        Lunch: ["Chapathi", "Green Peas Pulav", "Spinach Dal", "Gobhi Capsicum"],
-        Snacks: ["Samosa", "Ketchup", "Cold Coffee"],
-        Dinner: ["Dal Makhani", "Aloo Brinjal", "Sambar", "Phulka", "Kheem"]
+        Breakfast: ["Aloo Paratha / Green Peas Upma", "Curd / Green Chatni", "Boiled Egg / Banana", "Oats", "Sprout"],
+        Lunch: ["Mix Veg Semi Dry", "Besan Gatte Masala", "Dal Fry", "Steam Rice", "Rasam", "Flavoured Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Veg Fried Rice / Veg Noodles", "Veg Manchurian Gravy", "Aloo Capsicum", "Dal Adraki", "Rasam", "Sweet: Payasam"]
     },
     Sunday: {
-        Breakfast: ["Andhra Kara Dosa", "Peanut Chutney", "Sambar"],
-        Lunch: ["Puri", "Biryani Rice", "Chicken/Paneer Masala", "Chana Dal"],
-        Snacks: ["Pav Bhaji"],
-        Dinner: ["Phulka", "Baby Aloo Masala", "Soya Chilli", "White Rice"]
+        Breakfast: ["Masala Dosa", "Sambhar", "Chatni", "Boiled Egg / Banana", "Cornflakes", "Boiled Peanut"],
+        Lunch: ["Mandi Rice", "Chicken Masala / Paneer Masala", "Beetroot Dry", "Dal Tadka", "Lime Juice"],
+        Snacks: ["Pay Snacks"],
+        Dinner: ["Aloo Mutter Dry", "Brinjal Curry", "Triangle Paratha", "Sambhar", "Sweet: Fruit Custard"]
     }
 };
