@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, ArrowLeftRight, Utensils, Bus, MapPin, ChevronRight, Clock } from './Icons';
 import { week1Menu, week2Menu } from '../data/menu';
 import type { DailyMenu, DayOfWeek } from '../data/menu';
 import { busSchedule } from '../data/busData';
 import { getWeekParity, getFormatDate, getActiveOrNextMeal, parseBusTimesOrdered, formatBusTime, MEAL_WINDOWS } from '../utils/timeUtils';
+import { isAlarmSet, toggleAlarm } from '../utils/alarmUtils';
 
 interface TodayTabProps {
   onNavigateToBus: () => void;
@@ -38,6 +39,8 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
   // Dynamic Bus Countdown Calibration
   const [nextBusTime, setNextBusTime] = useState<string>('7:30');
   const [minutesLeft, setMinutesLeft] = useState<number>(0);
+  const [alarmActive, setAlarmActive] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const updateBusTiming = () => {
@@ -61,10 +64,12 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
       if (minDiff !== 9999) {
         setNextBusTime(foundBus.time);
         setMinutesLeft(minDiff);
+        setAlarmActive(isAlarmSet(foundBus.time, direction));
       } else {
         // Next day morning fallback
         setNextBusTime(routes[0].time);
         setMinutesLeft(0);
+        setAlarmActive(isAlarmSet(routes[0].time, direction));
       }
     };
 
@@ -73,13 +78,56 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
     return () => clearInterval(timer);
   }, [direction]);
 
+  const handleToggleNextBusAlarm = () => {
+    const label = direction === 'sahyadriToNila' ? 'Sahyadri ➔ Nila' : 'Nila ➔ Sahyadri';
+    const res = toggleAlarm(nextBusTime, direction, label);
+    setAlarmActive(res.isSet);
+    const msg = res.isSet 
+      ? `🔔 Alarm set for ${formatBusTime(nextBusTime)} (${label})` 
+      : `🔕 Alarm cancelled for ${formatBusTime(nextBusTime)}`;
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3200);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className="app-viewport"
+      style={{ position: 'relative' }}
     >
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            style={{
+              position: 'fixed',
+              top: '1rem',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 1000,
+              background: '#0b1329',
+              border: '1px solid var(--color-cyan)',
+              color: '#ffffff',
+              padding: '0.65rem 1.1rem',
+              borderRadius: 'var(--radius-pill)',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              pointerEvents: 'none'
+            }}
+          >
+            {toastMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Top Header */}
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
@@ -154,9 +202,33 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
             </span>
           </div>
 
-          <span className="badge badge-cyan">
-            Next Departure
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span className="badge badge-cyan">
+              Next Departure
+            </span>
+            <button
+              onClick={handleToggleNextBusAlarm}
+              title={alarmActive ? 'Cancel Alarm' : 'Set Alarm (5m before)'}
+              style={{
+                background: alarmActive ? 'rgba(245, 158, 11, 0.25)' : 'rgba(255, 255, 255, 0.08)',
+                border: alarmActive ? '1px solid rgba(245, 158, 11, 0.4)' : 'none',
+                borderRadius: '50%',
+                width: '26px',
+                height: '26px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                padding: 0
+              }}
+            >
+              <Bell 
+                size={13} 
+                color={alarmActive ? 'var(--color-amber)' : '#ffffff'} 
+                fill={alarmActive ? 'var(--color-amber)' : 'none'} 
+              />
+            </button>
+          </div>
         </div>
 
         {/* Route Direction Selector */}
