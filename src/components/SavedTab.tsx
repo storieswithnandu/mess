@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Bookmark, Star, AlertTriangle, ShieldCheck, Heart } from './Icons';
+import { Phone, AlertTriangle } from './Icons';
 
 export const SavedTab: React.FC = () => {
   return (
@@ -12,43 +12,51 @@ export const SavedTab: React.FC = () => {
     >
       <header style={{ marginBottom: '1.25rem' }}>
         <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <Bookmark size={22} color="var(--color-cyan)" />
-          Saved & Favorites
+          <Phone size={22} color="var(--color-cyan)" />
+          Quick Contacts
         </h2>
         <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-          Bookmarked Shuttles, Mess Schedules & Campus Rules
+          Auto drivers & campus helpline numbers
         </p>
       </header>
 
-      {/* Bookmarked Bus Route */}
-      <div className="campus-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <Star size={16} color="var(--color-amber)" fill="var(--color-amber)" />
-            <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#ffffff' }}>Favorite Bus: 05:15 PM Express</h4>
-          </div>
-          <span className="badge badge-amber">High Demand</span>
+      {/* Coming Soon Card */}
+      <div className="campus-card" style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '3rem 1.5rem',
+        textAlign: 'center',
+        border: '1px dashed rgba(56, 189, 248, 0.25)',
+        background: 'rgba(56, 189, 248, 0.03)'
+      }}>
+        <div style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '50%',
+          background: 'rgba(56, 189, 248, 0.1)',
+          border: '1px solid rgba(56, 189, 248, 0.25)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '1rem',
+          fontSize: '1.75rem'
+        }}>
+          🛺
         </div>
-        <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-          Sahyadri ➔ Nila • Daily Post-Lab Commute (Multiple buses available)
+        <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', marginBottom: '0.4rem' }}>
+          Auto Driver Numbers
+        </h3>
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.5', maxWidth: '240px' }}>
+          Trusted auto driver contacts for IIT Palakkad will be listed here soon.
         </p>
+        <span className="badge badge-cyan" style={{ marginTop: '1rem' }}>
+          Coming Soon
+        </span>
       </div>
 
-      {/* Bookmarked Special Meal */}
-      <div className="campus-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <Heart size={16} color="var(--color-rose)" fill="var(--color-rose)" />
-            <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#ffffff' }}>Favorite Meal: Biryani & Gulab Jamun</h4>
-          </div>
-          <span className="badge badge-emerald">Sunday Special</span>
-        </div>
-        <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-          Served on Sunday Lunch & Wednesday Dinner
-        </p>
-      </div>
-
-      {/* Important Disclaimer Card */}
+      {/* Disclaimer */}
       <div className="campus-card" style={{ border: '1px solid rgba(245, 158, 11, 0.25)', background: 'rgba(245, 158, 11, 0.05)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
           <AlertTriangle size={18} color="var(--color-amber)" />
@@ -56,17 +64,6 @@ export const SavedTab: React.FC = () => {
         </div>
         <p style={{ fontSize: '0.78rem', color: 'var(--text-main)', lineHeight: '1.4' }}>
           💡 Always cross-check bus schedules and mess menu updates with official campus notice boards and staff. Timings may adjust on institute holidays.
-        </p>
-      </div>
-
-      {/* Campus Info Card */}
-      <div className="campus-card">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem' }}>
-          <ShieldCheck size={18} color="var(--color-cyan)" />
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff' }}>IIT Palakkad Dining & Transit</h4>
-        </div>
-        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-          Kedaram Mess (North) • Sahyadri Mess (South) • Inter-Campus Transit Sync v2.5
         </p>
       </div>
     </motion.div>

@@ -13,7 +13,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
     { id: 'today', label: 'Today', icon: Calendar },
     { id: 'mess', label: 'Mess Menu', icon: Utensils },
     { id: 'bus', label: 'Bus Timing', icon: Bus },
-    { id: 'saved', label: 'Saved', icon: Bookmark },
+    { id: 'saved', label: 'Contacts', icon: Bookmark },
   ];
 
   return (
