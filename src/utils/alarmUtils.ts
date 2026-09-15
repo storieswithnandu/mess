@@ -75,3 +75,53 @@ export function removeAlarm(id: string): BusAlarm[] {
   }
   return alarms;
 }
+
+/**
+ * Play a synthesized dual-tone alarm beep using Web Audio API.
+ * Works across mobile browsers without external audio file dependencies.
+ */
+export function playAlarmSound(): void {
+  try {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+
+    const ctx = new AudioContextClass();
+
+    const playBeep = (freq: number, startTime: number, duration: number) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + startTime);
+
+      gain.gain.setValueAtTime(0.3, ctx.currentTime + startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTime + duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(ctx.currentTime + startTime);
+      osc.stop(ctx.currentTime + startTime + duration);
+    };
+
+    // 3-beep alarm chime sequence
+    playBeep(880, 0, 0.25);    // A5
+    playBeep(1174.66, 0.3, 0.35); // D6
+    playBeep(1318.51, 0.7, 0.5);  // E6
+  } catch (e) {
+    console.warn('Could not play Web Audio alarm sound:', e);
+  }
+}
+
+/**
+ * Trigger mobile vibration pattern for bus alarm.
+ */
+export function triggerVibration(): void {
+  if ('vibrate' in navigator) {
+    try {
+      navigator.vibrate([400, 200, 400, 200, 400]);
+    } catch {
+      // Ignore vibration failures if blocked by policy
+    }
+  }
+}

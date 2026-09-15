@@ -234,7 +234,7 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
                 color={alarmActive ? 'var(--color-amber)' : 'var(--color-cyan)'} 
                 fill={alarmActive ? 'var(--color-amber)' : 'none'} 
               />
-              <span>{alarmActive ? 'Alarm On' : 'Alarm'}</span>
+              <span>{alarmActive ? '5m Alarm On' : '5m Alarm'}</span>
             </button>
           </div>
         </div>

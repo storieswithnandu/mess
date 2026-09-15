@@ -3,7 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bus, ArrowLeftRight, Bell, ChevronDown, ChevronUp } from './Icons';
 import { busSchedule } from '../data/busData';
 import { parseBusTimesOrdered, formatBusTime } from '../utils/timeUtils';
-import { getAlarms, toggleAlarm, clearAllAlarms, removeAlarm, type BusAlarm } from '../utils/alarmUtils';
+import { getAlarms, toggleAlarm, clearAllAlarms, removeAlarm, playAlarmSound, triggerVibration, type BusAlarm } from '../utils/alarmUtils';
+
+// Track alarms already triggered in current session to prevent duplicate beeps
+const triggeredAlarmsSet = new Set<string>();
 
 export const BusTimingTab: React.FC = () => {
   const [direction, setDirection] = useState<'sahyadriToNila' | 'nilaToSahyadri'>('sahyadriToNila');
@@ -43,7 +46,7 @@ export const BusTimingTab: React.FC = () => {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage(null);
-    }, 3200);
+    }, 4500);
   };
 
   const handleToggleAlarm = (busTimeStr: string) => {
@@ -53,7 +56,8 @@ export const BusTimingTab: React.FC = () => {
     setAlarms(result.alarms);
 
     if (result.isSet) {
-      showToast(`🔔 Alarm set for ${formatted} (${label})`);
+      showToast(`🔔 Alarm set for ${formatted}! You will be alerted 5 mins before departure.`);
+      playAlarmSound(); // Play test chime confirmation
     } else {
       showToast(`🔕 Alarm removed for ${formatted}`);
     }
@@ -71,7 +75,7 @@ export const BusTimingTab: React.FC = () => {
     showToast(`Cleared all bus alarms`);
   };
 
-  // Background Alarm Checker Engine (Runs every 15 seconds)
+  // Background Alarm Checker Engine (Runs every 10 seconds)
   useEffect(() => {
     const checkAlarms = () => {
       const activeAlarms = getAlarms();
@@ -81,7 +85,7 @@ export const BusTimingTab: React.FC = () => {
       const curMinutes = n.getHours() * 60 + n.getMinutes();
 
       activeAlarms.forEach(alarm => {
-        // Parse time
+        // Parse time into minutes
         const parts = alarm.timeStr.split(':');
         let hrs = parseInt(parts[0], 10);
         const mins = parseInt(parts[1], 10);
@@ -89,11 +93,25 @@ export const BusTimingTab: React.FC = () => {
         if (hrs >= 1 && hrs <= 6) busMins += 12 * 60; // 1-6 PM heuristic
 
         const diff = busMins - curMinutes;
-        // Trigger alert if bus is departing in 5 minutes
-        if (diff === 5) {
+        const triggerKey = `${alarm.id}_${n.toDateString()}`;
+
+        // Trigger alert when bus departure is 5 minutes away
+        if (diff <= 5 && diff > 0 && !triggeredAlarmsSet.has(triggerKey)) {
+          triggeredAlarmsSet.add(triggerKey);
+          
+          // 1. Play sound chime
+          playAlarmSound();
+          
+          // 2. Trigger vibration on phones
+          triggerVibration();
+          
+          // 3. Show top banner toast
+          showToast(`🚨 BUS ALARM: Shuttle at ${formatBusTime(alarm.timeStr)} (${alarm.directionLabel}) departs in 5 minutes!`);
+
+          // 4. Send Web Notification if granted
           if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification(`🚍 Campus Bus Reminder`, {
-              body: `Bus departing at ${formatBusTime(alarm.timeStr)} (${alarm.directionLabel}) in 5 minutes!`,
+            new Notification(`🚍 Campus Bus Departing in 5 Mins!`, {
+              body: `The shuttle at ${formatBusTime(alarm.timeStr)} (${alarm.directionLabel}) departs in 5 minutes.`,
               icon: '/mess-icon.svg'
             });
           }
@@ -101,7 +119,8 @@ export const BusTimingTab: React.FC = () => {
       });
     };
 
-    const interval = setInterval(checkAlarms, 15000);
+    checkAlarms();
+    const interval = setInterval(checkAlarms, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -186,7 +205,7 @@ export const BusTimingTab: React.FC = () => {
                 color={hasAlarm ? 'var(--color-amber)' : 'var(--color-cyan)'} 
                 fill={hasAlarm ? 'var(--color-amber)' : 'none'} 
               />
-              <span>{hasAlarm ? 'Alarm On' : 'Alarm'}</span>
+              <span>{hasAlarm ? '5m Alarm On' : '5m Alarm'}</span>
             </button>
           </div>
         </div>
