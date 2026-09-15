@@ -35,7 +35,7 @@ function App() {
       {/* Header */}
       <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Mess Menu</h2>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Kedaram Mess Menu</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500 }}>
             {getFormatDate(view === 'today' ? now : new Date(now.getTime() + 86400000))}
           </p>
