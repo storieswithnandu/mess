@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Bell, ArrowLeftRight, Utensils, Bus, MapPin, ChevronRight, Clock } from './Icons';
-import { week1Menu, week2Menu, DailyMenu, DayOfWeek } from '../data/menu';
+import { week1Menu, week2Menu } from '../data/menu';
+import type { DailyMenu, DayOfWeek } from '../data/menu';
 import { busSchedule } from '../data/busData';
 import { getWeekParity, getFormatDate, getActiveOrNextMeal, parseBusTimeToMins, MEAL_WINDOWS } from '../utils/timeUtils';
 

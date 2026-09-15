@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Bell, Utensils, Coffee, Moon, Sun, Filter, Sparkles } from './Icons';
-import { week1Menu, week2Menu, DailyMenu, DayOfWeek } from '../data/menu';
+import { week1Menu, week2Menu } from '../data/menu';
+import type { DailyMenu, DayOfWeek } from '../data/menu';
 import { getWeekParity, getFormatDate, getMealStatus, MEAL_WINDOWS } from '../utils/timeUtils';
 
 export const MessMenuTab: React.FC = () => {
