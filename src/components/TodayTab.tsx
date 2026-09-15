@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Bell, ArrowLeftRight, Utensils, Bus, ThumbsUp, CloudCheck, MapPin, ChevronRight, Clock } from './Icons';
-import { week1Menu, week2Menu } from '../data/menu';
-import type { DailyMenu, DayOfWeek } from '../data/menu';
+import { Bell, ArrowLeftRight, Utensils, Bus, MapPin, ChevronRight, Clock } from './Icons';
+import { week1Menu, week2Menu, DailyMenu, DayOfWeek } from '../data/menu';
 import { busSchedule } from '../data/busData';
-import { getWeekParity, getFormatDate, getCurrentDay } from '../utils/timeUtils';
+import { getWeekParity, getFormatDate, getActiveOrNextMeal, parseBusTimeToMins, MEAL_WINDOWS } from '../utils/timeUtils';
 
 interface TodayTabProps {
   onNavigateToBus: () => void;
@@ -13,52 +12,61 @@ interface TodayTabProps {
 
 export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateToMess }) => {
   const [direction, setDirection] = useState<'sahyadriToNila' | 'nilaToSahyadri'>('sahyadriToNila');
-  const [selectedDayOffset, setSelectedDayOffset] = useState<0 | 1>(0); // 0 = today, 1 = tomorrow
+  const [selectedDayOffset, setSelectedDayOffset] = useState<0 | 1>(0);
 
   const now = new Date();
   const targetDate = new Date(now.getTime() + selectedDayOffset * 86400000);
   const weekParity = getWeekParity(targetDate);
-  // currentDayName removed
-  
+
   const days: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const dayIndex = (now.getDay() + selectedDayOffset) % 7;
   const targetDayName = days[dayIndex];
 
   const currentMenu: DailyMenu = weekParity === 'odd' ? week1Menu[targetDayName] : week2Menu[targetDayName];
 
-  // Dynamic Shuttle Countdown Calculation
-  const [minutesLeft, setMinutesLeft] = useState<number>(12);
-  const [nextBusTime, setNextBusTime] = useState<string>('01:00 PM');
+  // Dynamic Time & Active Meal Calibration
+  const mealState = getActiveOrNextMeal(now);
+  const displayMealType = selectedDayOffset === 0 
+    ? (mealState.activeMeal ? mealState.activeMeal.type : mealState.nextMeal.type)
+    : 'Breakfast';
+
+  const isCurrentlyServing = selectedDayOffset === 0 && mealState.activeMeal !== null;
+  const currentItems = currentMenu[displayMealType] || [];
+  const timeRangeStr = MEAL_WINDOWS.find(w => w.type === displayMealType)?.timeRangeStr || '';
+
+  // Dynamic Bus Countdown Calibration
+  const [nextBusTime, setNextBusTime] = useState<string>('07:30');
+  const [minutesLeft, setMinutesLeft] = useState<number>(18);
 
   useEffect(() => {
-    const updateCountdown = () => {
+    const updateBusTiming = () => {
       const currentMins = now.getHours() * 60 + now.getMinutes();
       const routes = busSchedule.workingDays[direction];
-      
-      let foundTime = '01:00 PM';
-      let minDiff = 999;
 
-      for (const entry of routes) {
-        const parts = entry.time.split(':');
-        let h = parseInt(parts[0], 10);
-        const m = parseInt(parts[1], 10);
-        // Approximation for PM/AM in 12h format
-        if (h < 7) h += 12; // PM
-        const busMins = h * 60 + m;
+      let foundBus = routes[0];
+      let minDiff = 9999;
 
+      for (const b of routes) {
+        const busMins = parseBusTimeToMins(b.time);
         if (busMins >= currentMins && (busMins - currentMins) < minDiff) {
           minDiff = busMins - currentMins;
-          foundTime = entry.time;
+          foundBus = b;
         }
       }
 
-      setMinutesLeft(minDiff === 999 ? 15 : minDiff);
-      setNextBusTime(foundTime);
+      if (minDiff !== 9999) {
+        setNextBusTime(foundBus.time);
+        setMinutesLeft(minDiff);
+      } else {
+        // Next day morning fallback
+        setNextBusTime(routes[0].time);
+        setMinutesLeft(30);
+      }
     };
 
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 30000);
-    return () => clearInterval(interval);
+    updateBusTiming();
+    const timer = setInterval(updateBusTiming, 30000);
+    return () => clearInterval(timer);
   }, [direction]);
 
   return (
@@ -74,15 +82,12 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
           <div style={{
             background: 'var(--color-cyan)',
             color: '#0b1329',
-            padding: '0.4rem 0.6rem',
+            padding: '0.4rem 0.65rem',
             borderRadius: 'var(--radius-sm)',
             fontWeight: 800,
-            fontSize: '0.9rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.3rem'
+            fontSize: '0.9rem'
           }}>
-            🎓 CampusPulse
+            CampusPulse
           </div>
           <span style={{ fontSize: '0.75rem', color: 'var(--color-emerald)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-emerald)' }}></span>
@@ -104,7 +109,7 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
             gap: '0.3rem'
           }}>
             <MapPin size={13} color="var(--color-cyan)" />
-            Sahyadri
+            Kedaram Mess
           </div>
           <button style={{
             background: 'var(--bg-surface)',
@@ -127,21 +132,16 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
         <div>
           <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
-            Hey, Student 👋
+            Kedaram Mess Menu
           </h2>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, marginTop: '2px' }}>
-            Kedaram Mess • Week {weekParity === 'odd' ? '1 / 3' : '2 / 4'}
+            Week {weekParity === 'odd' ? '1 / 3' : '2 / 4'} • {targetDayName}
           </p>
-        </div>
-
-        <div className="badge badge-subtle" style={{ gap: '0.3rem', padding: '0.35rem 0.65rem' }}>
-          <CloudCheck size={13} color="var(--color-cyan)" />
-          <span>Cached</span>
         </div>
       </div>
 
       {/* Shuttle Live Banner */}
-      <div className="campus-card active-glow" style={{ position: 'relative' }}>
+      <div className="campus-card active-glow">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <Bus size={17} color="var(--color-cyan)" />
@@ -150,10 +150,9 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
             </span>
           </div>
 
-          <div className="badge badge-emerald">
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-emerald)' }}></span>
-            Filling up (70%)
-          </div>
+          <span className="badge badge-cyan">
+            Next Departure
+          </span>
         </div>
 
         {/* Route Direction Selector */}
@@ -176,8 +175,7 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'transform 0.2s ease'
+              justifyContent: 'center'
             }}
             title="Swap Direction"
           >
@@ -186,28 +184,17 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
         </div>
 
         <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
-          Departs at <strong style={{ color: '#ffffff' }}>{nextBusTime}</strong> sharp
+          Departs at <strong style={{ color: '#ffffff' }}>{nextBusTime} PM</strong> sharp
         </p>
 
-        {/* Progress Bar & Minutes Countdown */}
-        <div style={{ background: 'rgba(0, 0, 0, 0.25)', padding: '0.85rem', borderRadius: 'var(--radius-md)', marginBottom: '0.75rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-              Arriving at {direction === 'sahyadriToNila' ? 'Sahyadri Circle' : 'Nila Gate'} in
-            </span>
-            <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-cyan)' }}>
-              {minutesLeft} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>mins</span>
-            </span>
-          </div>
-
-          <div className="progress-bar-track">
-            <div className="progress-bar-fill" style={{ width: `${Math.min(100, Math.max(20, (1 - minutesLeft / 30) * 100))}%`, background: 'var(--color-cyan)' }}></div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>
-            <span>Boarding Stop: Academic Block 1</span>
-            <span>Bus #KL-09-8422</span>
-          </div>
+        {/* Countdown Box */}
+        <div style={{ background: 'rgba(0, 0, 0, 0.25)', padding: '0.85rem', borderRadius: 'var(--radius-md)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+            Next shuttle arriving in
+          </span>
+          <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-cyan)' }}>
+            {minutesLeft} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>mins</span>
+          </span>
         </div>
       </div>
 
@@ -256,28 +243,35 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
         </button>
       </div>
 
-      {/* Lunch Service Card (Serving Now) */}
-      <div className="campus-card" style={{ background: 'var(--bg-surface)' }}>
+      {/* Active Meal Service Card (Calibrated to Real Time) */}
+      <div className={`campus-card ${isCurrentlyServing ? 'emerald-glow' : ''}`}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <Utensils size={18} color="var(--color-amber)" />
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff' }}>Lunch Service</h3>
+            <Utensils size={18} color={isCurrentlyServing ? 'var(--color-emerald)' : 'var(--color-cyan)'} />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff' }}>
+              {displayMealType} Service
+            </h3>
           </div>
-          <div className="badge badge-amber">
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-amber)' }}></span>
-            Serving Now • 45m left
+
+          <div className={`badge ${isCurrentlyServing ? 'badge-emerald' : 'badge-subtle'}`}>
+            {isCurrentlyServing ? (
+              <>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-emerald)' }}></span>
+                Serving Now
+              </>
+            ) : 'Upcoming'}
           </div>
         </div>
 
         <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.85rem' }}>
-          Mess Hall (Kedaram Dining) • <strong style={{ color: 'var(--color-cyan)' }}>12:30 PM – 02:30 PM</strong>
+          Kedaram Dining Hall • <strong style={{ color: 'var(--color-cyan)' }}>{timeRangeStr}</strong>
         </p>
 
-        {/* Menu Item Rows */}
+        {/* Meal Item Rows */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
-          {currentMenu.Lunch.slice(0, 5).map((item, idx) => {
-            const isVegSpecial = item.toLowerCase().includes('paneer') || item.toLowerCase().includes('khichdi');
+          {currentItems.map((item, idx) => {
             const isNonVeg = item.toLowerCase().includes('chicken') || item.toLowerCase().includes('egg');
+            const isSpecial = item.toLowerCase().includes('paneer') || item.toLowerCase().includes('biriyani') || item.toLowerCase().includes('sweet') || item.toLowerCase().includes('kheer') || item.toLowerCase().includes('ice cream');
 
             return (
               <div
@@ -303,55 +297,30 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
                   <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#ffffff' }}>{item}</span>
                 </div>
 
-                <span className={`badge ${isNonVeg ? 'badge-rose' : isVegSpecial ? 'badge-amber' : 'badge-subtle'}`}>
-                  {isNonVeg ? 'Non-Veg Option' : isVegSpecial ? 'Veg Special' : 'Standard'}
+                <span className={`badge ${isNonVeg ? 'badge-rose' : isSpecial ? 'badge-amber' : 'badge-subtle'}`}>
+                  {isNonVeg ? 'Non-Veg' : isSpecial ? 'Special' : 'Standard'}
                 </span>
               </div>
             );
           })}
         </div>
 
-        {/* Rating & Actions Bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-            <ThumbsUp size={14} color="var(--color-amber)" />
-            <strong style={{ color: '#ffffff' }}>88%</strong> students approved
-          </span>
-          <button
-            onClick={onNavigateToMess}
-            style={{
-              background: 'rgba(56, 189, 248, 0.1)',
-              border: '1px solid rgba(56, 189, 248, 0.25)',
-              color: 'var(--color-cyan)',
-              padding: '0.4rem 0.85rem',
-              borderRadius: 'var(--radius-pill)',
-              fontWeight: 700,
-              fontSize: '0.78rem',
-              cursor: 'pointer'
-            }}
-          >
-            View Full Menu
-          </button>
-        </div>
-      </div>
-
-      {/* Next Meal Preview */}
-      <div className="campus-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.3rem' }}>
-            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-cyan)', letterSpacing: '0.05em' }}>NEXT MEAL</span>
-            <span className="badge badge-subtle">04:30 PM</span>
-          </div>
-          <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#ffffff', marginBottom: '0.2rem' }}>Evening Snacks</h4>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-            {currentMenu.Snacks.join(', ')} • Tea & Coffee
-          </p>
-        </div>
         <button
           onClick={onNavigateToMess}
-          style={{ background: 'transparent', border: 'none', color: 'var(--color-cyan)', cursor: 'pointer' }}
+          style={{
+            width: '100%',
+            background: 'rgba(56, 189, 248, 0.1)',
+            border: '1px solid rgba(56, 189, 248, 0.25)',
+            color: 'var(--color-cyan)',
+            padding: '0.55rem',
+            borderRadius: 'var(--radius-pill)',
+            fontWeight: 700,
+            fontSize: '0.8rem',
+            cursor: 'pointer',
+            textAlign: 'center'
+          }}
         >
-          <ChevronRight size={20} />
+          View Full Day Menu ➔
         </button>
       </div>
 
@@ -359,25 +328,19 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
       <div className="campus-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
           <div>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff', letterSpacing: '0.02em' }}>LATER SHUTTLES</h4>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff', letterSpacing: '0.02em' }}>UPCOMING SHUTTLES</h4>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{direction === 'sahyadriToNila' ? 'Sahyadri ➔ Nila' : 'Nila ➔ Sahyadri'}</p>
           </div>
           <Clock size={16} color="var(--text-muted)" />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginBottom: '0.75rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', padding: '0.4rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-            <span style={{ fontWeight: 700, color: '#ffffff' }}>02:15 PM</span>
-            <span style={{ color: 'var(--text-muted)' }}>Class Rush Express</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', padding: '0.4rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-            <span style={{ fontWeight: 700, color: '#ffffff' }}>03:45 PM</span>
-            <span style={{ color: 'var(--text-muted)' }}>Regular Trip</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', padding: '0.4rem 0' }}>
-            <span style={{ fontWeight: 700, color: '#ffffff' }}>05:30 PM</span>
-            <span className="badge badge-emerald">High Frequency</span>
-          </div>
+          {busSchedule.workingDays[direction].slice(0, 4).map((bus, idx) => (
+            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', padding: '0.4rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
+              <span style={{ fontWeight: 700, color: '#ffffff' }}>{bus.time} {bus.isMultiple && '(m)'}</span>
+              <span style={{ color: 'var(--text-muted)' }}>Standard Transit</span>
+            </div>
+          ))}
         </div>
 
         <button

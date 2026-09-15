@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bus, ArrowLeftRight, Bell, Info, ChevronDown, ChevronUp } from './Icons';
 import { busSchedule } from '../data/busData';
+import { parseBusTimeToMins } from '../utils/timeUtils';
 
 export const BusTimingTab: React.FC = () => {
   const [direction, setDirection] = useState<'sahyadriToNila' | 'nilaToSahyadri'>('sahyadriToNila');
@@ -11,11 +12,26 @@ export const BusTimingTab: React.FC = () => {
   const currentRoute = busSchedule[dayType][direction];
   const extraBuses = busSchedule[dayType].extraBuses || [];
 
-  // Helper to categorize times into Morning, Afternoon, Evening
+  const now = new Date();
+  const currentMins = now.getHours() * 60 + now.getMinutes();
+
+  // Find next upcoming bus dynamically
+  let nextBusIndex = -1;
+  let minDiff = 9999;
+
+  currentRoute.forEach((bus, index) => {
+    const bMins = parseBusTimeToMins(bus.time);
+    if (bMins >= currentMins && (bMins - currentMins) < minDiff) {
+      minDiff = bMins - currentMins;
+      nextBusIndex = index;
+    }
+  });
+
+  // Categorize buses into Morning, Afternoon, Evening
   const categorizeTime = (timeStr: string) => {
     const parts = timeStr.split(':');
     let h = parseInt(parts[0], 10);
-    if (h < 7) h += 12; // Approximation for PM times like 1:00, 2:15 etc.
+    if (h < 7) h += 12;
     if (h < 12) return 'morning';
     if (h < 17) return 'afternoon';
     return 'evening';
@@ -24,6 +40,60 @@ export const BusTimingTab: React.FC = () => {
   const morningBuses = currentRoute.filter(b => categorizeTime(b.time) === 'morning');
   const afternoonBuses = currentRoute.filter(b => categorizeTime(b.time) === 'afternoon');
   const eveningBuses = currentRoute.filter(b => categorizeTime(b.time) === 'evening');
+
+  const renderBusList = (buses: typeof currentRoute) => {
+    return buses.map((bus, idx) => {
+      const bMins = parseBusTimeToMins(bus.time);
+      const isPast = bMins < currentMins;
+      const isNext = currentRoute.indexOf(bus) === nextBusIndex;
+
+      let diffStr = '';
+      if (isNext) {
+        diffStr = `Next in ${minDiff}m`;
+      } else if (!isPast) {
+        const remaining = bMins - currentMins;
+        const hrs = Math.floor(remaining / 60);
+        const mins = remaining % 60;
+        diffStr = hrs > 0 ? `In ${hrs}h ${mins}m` : `In ${mins}m`;
+      }
+
+      return (
+        <div
+          key={idx}
+          style={{
+            display: 'flex',
+            justify: 'space-between',
+            alignItems: 'center',
+            padding: '0.6rem 0.85rem',
+            background: isNext ? 'rgba(56, 189, 248, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+            border: isNext ? '1px solid rgba(56, 189, 248, 0.35)' : '1px solid rgba(255, 255, 255, 0.04)',
+            borderRadius: 'var(--radius-md)',
+            opacity: isPast ? 0.55 : 1
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <span style={{
+              fontSize: '0.92rem',
+              fontWeight: 800,
+              color: isNext ? 'var(--color-cyan)' : '#ffffff',
+              textDecoration: isPast ? 'line-through' : 'none'
+            }}>
+              {bus.time} {bus.isMultiple && '(m)'}
+            </span>
+            {isNext && (
+              <span className="badge badge-emerald" style={{ fontSize: '0.68rem', padding: '0.15rem 0.4rem' }}>
+                {diffStr}
+              </span>
+            )}
+          </div>
+
+          <span style={{ fontSize: '0.75rem', color: isNext ? 'var(--color-cyan)' : isPast ? 'var(--text-sub)' : 'var(--text-muted)' }}>
+            {isPast ? 'Departed' : isNext ? 'EV Shuttle 🚍' : diffStr}
+          </span>
+        </div>
+      );
+    });
+  };
 
   return (
     <motion.div
@@ -158,51 +228,22 @@ export const BusTimingTab: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-emerald)' }}></span>
-            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-emerald)', letterSpacing: '0.05em' }}>LIVE SHUTTLE TRACKING</span>
+            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-emerald)', letterSpacing: '0.05em' }}>NEXT SHUTTLE</span>
           </div>
-          <span className="badge badge-subtle">🚍 EV Shuttle #4</span>
+          <span className="badge badge-cyan">
+            {nextBusIndex !== -1 ? currentRoute[nextBusIndex].time : '07:45'} PM
+          </span>
         </div>
 
         <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.3rem' }}>
-          Next Departure from {direction === 'sahyadriToNila' ? 'Sahyadri Main Gate' : 'Nila Main Gate'}
+          Departure from {direction === 'sahyadriToNila' ? 'Sahyadri Main Gate' : 'Nila Main Gate'}
         </p>
 
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
           <span style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.03em' }}>
-            08 mins left
+            {minDiff !== 9999 ? minDiff : 15} mins left
           </span>
-          <span style={{ fontSize: '0.85rem', color: 'var(--color-cyan)', fontWeight: 700 }}>(01:15 PM)</span>
         </div>
-
-        <div style={{ background: 'rgba(0, 0, 0, 0.25)', padding: '0.75rem 0.85rem', borderRadius: 'var(--radius-md)', marginBottom: '0.85rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>
-            <span>Occupancy Meter</span>
-            <span style={{ color: 'var(--color-emerald)', fontWeight: 700 }}>~14 seats free</span>
-          </div>
-
-          <div className="progress-bar-track" style={{ margin: 0 }}>
-            <div className="progress-bar-fill" style={{ width: '65%', background: 'var(--color-emerald)' }}></div>
-          </div>
-        </div>
-
-        <button style={{
-          width: '100%',
-          background: 'var(--bg-subtle)',
-          border: 'var(--border-subtle)',
-          color: '#ffffff',
-          padding: '0.6rem',
-          borderRadius: 'var(--radius-pill)',
-          fontWeight: 700,
-          fontSize: '0.8rem',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '0.4rem'
-        }}>
-          <Bell size={14} color="var(--color-amber)" />
-          Remind Me (5m before)
-        </button>
       </div>
 
       {/* Day Schedule Filter Pills */}
@@ -233,160 +274,48 @@ export const BusTimingTab: React.FC = () => {
         ))}
       </div>
 
-      {/* Notice Card */}
-      <div style={{
-        background: 'rgba(245, 158, 11, 0.06)',
-        border: '1px solid rgba(245, 158, 11, 0.2)',
-        borderRadius: 'var(--radius-md)',
-        padding: '0.75rem 0.85rem',
-        marginBottom: '1.25rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        fontSize: '0.75rem',
-        color: 'var(--text-main)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <Info size={16} color="var(--color-amber)" />
-          <span>Regular Weekday Schedule • Timings adjust on Holidays</span>
-        </div>
-        <span style={{ color: 'var(--color-amber)', fontWeight: 700, whiteSpace: 'nowrap' }}>Rules</span>
-      </div>
-
       {/* Daily Schedule List */}
       <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff', marginBottom: '1rem' }}>
         Daily Schedule
       </h3>
 
       {/* Morning Slots */}
-      <div className="campus-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            🌅 Morning Slots
-          </h4>
-          <span className="badge badge-subtle">All Departed</span>
+      {morningBuses.length > 0 && (
+        <div className="campus-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-muted)' }}>🌅 Morning Slots</h4>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {renderBusList(morningBuses)}
+          </div>
         </div>
+      )}
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {morningBuses.map((bus, idx) => (
-            <div
-              key={idx}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '0.5rem 0.75rem',
-                background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: 'var(--radius-sm)',
-                opacity: 0.6
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', textDecoration: 'line-through' }}>
-                  {bus.time} {bus.isMultiple && '(m)'}
-                </span>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-sub)' }}>Standard Shuttle</span>
-              </div>
-              <span className="badge badge-subtle">Departed</span>
-            </div>
-          ))}
+      {/* Afternoon Slots */}
+      {afternoonBuses.length > 0 && (
+        <div className="campus-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-cyan)' }}>☀️ Afternoon Slots</h4>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {renderBusList(afternoonBuses)}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Afternoon Slots (Active Window) */}
-      <div className="campus-card active-glow">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-cyan)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            ☀️ Afternoon Slots
-          </h4>
-          <span className="badge badge-emerald">
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-emerald)' }}></span>
-            Active Window
-          </span>
+      {/* Evening Slots */}
+      {eveningBuses.length > 0 && (
+        <div className="campus-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff' }}>🌙 Evening & Night Slots</h4>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {renderBusList(eveningBuses)}
+          </div>
         </div>
+      )}
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {afternoonBuses.map((bus, idx) => {
-            const isFirstActive = idx === 0;
-
-            return (
-              <div
-                key={idx}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '0.6rem 0.85rem',
-                  background: isFirstActive ? 'rgba(56, 189, 248, 0.1)' : 'rgba(255, 255, 255, 0.03)',
-                  border: isFirstActive ? '1px solid rgba(56, 189, 248, 0.3)' : '1px solid rgba(255, 255, 255, 0.04)',
-                  borderRadius: 'var(--radius-md)'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: isFirstActive ? 'var(--color-cyan)' : '#ffffff' }}>
-                    {bus.time} {bus.isMultiple && '(m)'}
-                  </span>
-                  {isFirstActive && (
-                    <span className="badge badge-emerald" style={{ fontSize: '0.68rem', padding: '0.15rem 0.4rem' }}>
-                      Next In 8m
-                    </span>
-                  )}
-                </div>
-
-                <span style={{ fontSize: '0.78rem', color: isFirstActive ? 'var(--color-cyan)' : 'var(--text-muted)', fontWeight: 600 }}>
-                  {isFirstActive ? 'EV-4 🚍' : 'Standard Transit'}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Evening & Night Slots */}
-      <div className="campus-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            🌙 Evening & Night Slots
-          </h4>
-          <span className="badge badge-subtle">Upcoming</span>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {eveningBuses.map((bus, idx) => {
-            const isDinnerShuttle = bus.time === '7:30' || bus.time === '8:00';
-
-            return (
-              <div
-                key={idx}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '0.55rem 0.75rem',
-                  background: isDinnerShuttle ? 'rgba(245, 158, 11, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-                  border: isDinnerShuttle ? '1px solid rgba(245, 158, 11, 0.25)' : '1px solid rgba(255, 255, 255, 0.04)',
-                  borderRadius: 'var(--radius-sm)'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <span style={{ fontSize: '0.9rem', fontWeight: 800, color: isDinnerShuttle ? 'var(--color-amber)' : '#ffffff' }}>
-                    {bus.time} {bus.isMultiple && '(m)'}
-                  </span>
-                  {isDinnerShuttle && (
-                    <span className="badge badge-amber" style={{ fontSize: '0.65rem' }}>Dinner Shuttle</span>
-                  )}
-                </div>
-
-                <span style={{ fontSize: '0.75rem', color: isDinnerShuttle ? 'var(--color-amber)' : 'var(--text-muted)' }}>
-                  {isDinnerShuttle ? 'High Demand' : 'Late Transit'}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Extra Buses & Town Routes Toggle */}
+      {/* Extra Buses Toggle */}
       <div className="campus-card" style={{ padding: '0.85rem 1rem' }}>
         <button
           onClick={() => setShowExtra(!showExtra)}
@@ -399,7 +328,7 @@ export const BusTimingTab: React.FC = () => {
             fontSize: '0.85rem',
             cursor: 'pointer',
             display: 'flex',
-            justifyContent: 'space-between',
+            justify: 'space-between',
             alignItems: 'center'
           }}
         >
