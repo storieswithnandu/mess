@@ -355,7 +355,7 @@ export const BusTimingTab: React.FC = () => {
                         key={alarm.id}
                         style={{
                           display: 'flex',
-                          justify: 'space-between',
+                          justifyContent: 'space-between',
                           alignItems: 'center',
                           padding: '0.6rem 0.85rem',
                           background: 'rgba(255, 255, 255, 0.03)',
