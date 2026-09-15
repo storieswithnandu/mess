@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getCurrentMeal } from '../utils/timeUtils';
+import { getActiveOrNextMeal } from '../utils/timeUtils';
 import { week1Menu, week2Menu, type DailyMenu, commonItems, type DayOfWeek } from '../data/menu';
 import styles from './NextMealCard.module.css';
 
@@ -8,11 +8,23 @@ interface NextMealCardProps {
     weekParity: 'odd' | 'even';
 }
 
+// Adapter: converts getActiveOrNextMeal result to legacy interface
+function getCurrentMealInfo() {
+    const result = getActiveOrNextMeal(new Date());
+    if (result.activeMeal) {
+        return { type: result.activeMeal.type as string, isActive: true };
+    }
+    // If startsInMins > 8 hours and it's Breakfast, it's next day
+    const isNextDay = result.nextMeal.type === 'Breakfast' &&
+        (result.startsInMins ?? 0) > 8 * 60;
+    return { type: isNextDay ? 'Next Day' : result.nextMeal.type as string, isActive: false };
+}
+
 export const NextMealCard = ({ day, weekParity }: NextMealCardProps) => {
-    const [currentMeal, setCurrentMeal] = useState(getCurrentMeal());
+    const [currentMeal, setCurrentMeal] = useState(getCurrentMealInfo());
 
     useEffect(() => {
-        const timer = setInterval(() => setCurrentMeal(getCurrentMeal()), 60000);
+        const timer = setInterval(() => setCurrentMeal(getCurrentMealInfo()), 60000);
         return () => clearInterval(timer);
     }, []);
 
@@ -30,7 +42,6 @@ export const NextMealCard = ({ day, weekParity }: NextMealCardProps) => {
         displayMealType = 'Breakfast';
         label = "Tomorrow Morning";
     }
-
 
     const items = itemsMenu[displayMealType as keyof DailyMenu] || [];
     const extras = commonItems[displayMealType as keyof typeof commonItems] || [];

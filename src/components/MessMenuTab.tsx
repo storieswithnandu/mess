@@ -154,7 +154,7 @@ export const MessMenuTab: React.FC = () => {
       {mealCards.map(({ type, icon: Icon, iconColor }) => {
         const mealTimeStr = MEAL_WINDOWS.find(w => w.type === type)?.timeRangeStr || '';
         const items = filterItems(currentMenu[type] || []);
-        const mealStatus = selectedDayOffset === 0 ? getMealStatus(type, now) : { status: 'Upcoming' };
+        const mealStatus = selectedDayOffset === 0 ? getMealStatus(type, now) : getMealStatus(type, new Date(0));
 
         const isServing = mealStatus.status === 'Serving Now';
 
@@ -174,9 +174,9 @@ export const MessMenuTab: React.FC = () => {
                 {isServing ? (
                   <>
                     <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-emerald)' }}></span>
-                    Serving Now • {mealStatus.closesInMins}m left
+                    Serving Now • {mealStatus.closesInMins ?? 0}m left
                   </>
-                ) : mealStatus.status}
+                ) : (selectedDayOffset === 0 ? mealStatus.status : 'Upcoming')}
               </span>
             </div>
 

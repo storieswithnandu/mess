@@ -4,7 +4,7 @@ import { Bell, ArrowLeftRight, Utensils, Bus, MapPin, ChevronRight, Clock } from
 import { week1Menu, week2Menu } from '../data/menu';
 import type { DailyMenu, DayOfWeek } from '../data/menu';
 import { busSchedule } from '../data/busData';
-import { getWeekParity, getFormatDate, getActiveOrNextMeal, parseBusTimeToMins, MEAL_WINDOWS } from '../utils/timeUtils';
+import { getWeekParity, getFormatDate, getActiveOrNextMeal, parseBusTimesOrdered, formatBusTime, MEAL_WINDOWS } from '../utils/timeUtils';
 
 interface TodayTabProps {
   onNavigateToBus: () => void;
@@ -36,24 +36,27 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
   const timeRangeStr = MEAL_WINDOWS.find(w => w.type === displayMealType)?.timeRangeStr || '';
 
   // Dynamic Bus Countdown Calibration
-  const [nextBusTime, setNextBusTime] = useState<string>('07:30');
-  const [minutesLeft, setMinutesLeft] = useState<number>(18);
+  const [nextBusTime, setNextBusTime] = useState<string>('7:30');
+  const [minutesLeft, setMinutesLeft] = useState<number>(0);
 
   useEffect(() => {
     const updateBusTiming = () => {
-      const currentMins = now.getHours() * 60 + now.getMinutes();
+      const n = new Date();
+      const currentMins = n.getHours() * 60 + n.getMinutes();
       const routes = busSchedule.workingDays[direction];
+
+      // Use ordered parsing so evening buses (7:00 PM, 8:00 PM) are > afternoon
+      const orderedMins = parseBusTimesOrdered(routes.map(b => b.time));
 
       let foundBus = routes[0];
       let minDiff = 9999;
 
-      for (const b of routes) {
-        const busMins = parseBusTimeToMins(b.time);
+      orderedMins.forEach((busMins, i) => {
         if (busMins >= currentMins && (busMins - currentMins) < minDiff) {
           minDiff = busMins - currentMins;
-          foundBus = b;
+          foundBus = routes[i];
         }
-      }
+      });
 
       if (minDiff !== 9999) {
         setNextBusTime(foundBus.time);
@@ -61,12 +64,12 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
       } else {
         // Next day morning fallback
         setNextBusTime(routes[0].time);
-        setMinutesLeft(30);
+        setMinutesLeft(0);
       }
     };
 
     updateBusTiming();
-    const timer = setInterval(updateBusTiming, 30000);
+    const timer = setInterval(updateBusTiming, 60000);
     return () => clearInterval(timer);
   }, [direction]);
 
@@ -185,7 +188,7 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
         </div>
 
         <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
-          Departs at <strong style={{ color: '#ffffff' }}>{nextBusTime} PM</strong> sharp
+          Departs at <strong style={{ color: '#ffffff' }}>{formatBusTime(nextBusTime)}</strong> sharp
         </p>
 
         {/* Countdown Box */}
@@ -336,12 +339,19 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginBottom: '0.75rem' }}>
-          {busSchedule.workingDays[direction].slice(0, 4).map((bus, idx) => (
-            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', padding: '0.4rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-              <span style={{ fontWeight: 700, color: '#ffffff' }}>{bus.time} {bus.isMultiple && '(m)'}</span>
-              <span style={{ color: 'var(--text-muted)' }}>Standard Transit</span>
-            </div>
-          ))}
+          {(() => {
+            const routes = busSchedule.workingDays[direction];
+            const allMins = parseBusTimesOrdered(routes.map(b => b.time));
+            const nowMins = new Date().getHours() * 60 + new Date().getMinutes();
+            const upcoming = routes.filter((_, i) => allMins[i] >= nowMins).slice(0, 4);
+            const displayBuses = upcoming.length > 0 ? upcoming : routes.slice(0, 4);
+            return displayBuses.map((bus, idx) => (
+              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', padding: '0.4rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
+                <span style={{ fontWeight: 700, color: '#ffffff' }}>{formatBusTime(bus.time)} {bus.isMultiple && <span style={{ color: 'var(--color-cyan)', fontSize: '0.7rem' }}>×2</span>}</span>
+                <span style={{ color: 'var(--text-muted)' }}>Campus Shuttle</span>
+              </div>
+            ));
+          })()}
         </div>
 
         <button

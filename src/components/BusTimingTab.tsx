@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bus, ArrowLeftRight, Bell, Info, ChevronDown, ChevronUp } from './Icons';
+import { Bus, ArrowLeftRight, Bell, ChevronDown, ChevronUp } from './Icons';
 import { busSchedule } from '../data/busData';
-import { parseBusTimeToMins } from '../utils/timeUtils';
+import { parseBusTimesOrdered, formatBusTime } from '../utils/timeUtils';
 
 export const BusTimingTab: React.FC = () => {
   const [direction, setDirection] = useState<'sahyadriToNila' | 'nilaToSahyadri'>('sahyadriToNila');
@@ -15,37 +15,31 @@ export const BusTimingTab: React.FC = () => {
   const now = new Date();
   const currentMins = now.getHours() * 60 + now.getMinutes();
 
+  // Ordered minutes for correct AM/PM resolution
+  const orderedMins = parseBusTimesOrdered(currentRoute.map(b => b.time));
+
   // Find next upcoming bus dynamically
   let nextBusIndex = -1;
   let minDiff = 9999;
 
-  currentRoute.forEach((bus, index) => {
-    const bMins = parseBusTimeToMins(bus.time);
+  orderedMins.forEach((bMins, index) => {
     if (bMins >= currentMins && (bMins - currentMins) < minDiff) {
       minDiff = bMins - currentMins;
       nextBusIndex = index;
     }
   });
 
-  // Categorize buses into Morning, Afternoon, Evening
-  const categorizeTime = (timeStr: string) => {
-    const parts = timeStr.split(':');
-    let h = parseInt(parts[0], 10);
-    if (h < 7) h += 12;
-    if (h < 12) return 'morning';
-    if (h < 17) return 'afternoon';
-    return 'evening';
-  };
-
-  const morningBuses = currentRoute.filter(b => categorizeTime(b.time) === 'morning');
-  const afternoonBuses = currentRoute.filter(b => categorizeTime(b.time) === 'afternoon');
-  const eveningBuses = currentRoute.filter(b => categorizeTime(b.time) === 'evening');
+  // Categorize buses into Morning, Afternoon, Evening using ordered minutes
+  const morningBuses = currentRoute.filter((_, i) => orderedMins[i] < 12 * 60);
+  const afternoonBuses = currentRoute.filter((_, i) => orderedMins[i] >= 12 * 60 && orderedMins[i] < 17 * 60);
+  const eveningBuses = currentRoute.filter((_, i) => orderedMins[i] >= 17 * 60);
 
   const renderBusList = (buses: typeof currentRoute) => {
     return buses.map((bus, idx) => {
-      const bMins = parseBusTimeToMins(bus.time);
+      const routeIdx = currentRoute.indexOf(bus);
+      const bMins = orderedMins[routeIdx] ?? 0;
       const isPast = bMins < currentMins;
-      const isNext = currentRoute.indexOf(bus) === nextBusIndex;
+      const isNext = routeIdx === nextBusIndex;
 
       let diffStr = '';
       if (isNext) {
@@ -62,7 +56,7 @@ export const BusTimingTab: React.FC = () => {
           key={idx}
           style={{
             display: 'flex',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             alignItems: 'center',
             padding: '0.6rem 0.85rem',
             background: isNext ? 'rgba(56, 189, 248, 0.12)' : 'rgba(255, 255, 255, 0.03)',
@@ -78,7 +72,7 @@ export const BusTimingTab: React.FC = () => {
               color: isNext ? 'var(--color-cyan)' : '#ffffff',
               textDecoration: isPast ? 'line-through' : 'none'
             }}>
-              {bus.time} {bus.isMultiple && '(m)'}
+              {formatBusTime(bus.time)} {bus.isMultiple && '(m)'}
             </span>
             {isNext && (
               <span className="badge badge-emerald" style={{ fontSize: '0.68rem', padding: '0.15rem 0.4rem' }}>
@@ -88,7 +82,7 @@ export const BusTimingTab: React.FC = () => {
           </div>
 
           <span style={{ fontSize: '0.75rem', color: isNext ? 'var(--color-cyan)' : isPast ? 'var(--text-sub)' : 'var(--text-muted)' }}>
-            {isPast ? 'Departed' : isNext ? 'EV Shuttle 🚍' : diffStr}
+            {isPast ? 'Departed' : isNext ? 'Next 🚍' : diffStr}
           </span>
         </div>
       );
@@ -207,7 +201,7 @@ export const BusTimingTab: React.FC = () => {
       {/* Sub Stats Bar */}
       <div style={{
         display: 'flex',
-        justify: 'space-around',
+        justifyContent: 'space-around',
         alignItems: 'center',
         background: 'rgba(255, 255, 255, 0.02)',
         borderRadius: 'var(--radius-md)',
@@ -328,7 +322,7 @@ export const BusTimingTab: React.FC = () => {
             fontSize: '0.85rem',
             cursor: 'pointer',
             display: 'flex',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             alignItems: 'center'
           }}
         >
