@@ -49,19 +49,16 @@ export function getCurrentDay(): DayOfWeek {
 }
 
 export function getWeekParity(date: Date = new Date()): 'odd' | 'even' {
-    // Anchor: Mon Feb 2, 2026 is start of "Week 2/4" (Even).
+    // Anchor: Mon Sept 14, 2026 is start of Week 1 / 3 (Odd parity)
     const anchorDate = new Date('2026-09-14T00:00:00');
 
-    // Calculate difference in milliseconds
     const diffTime = date.getTime() - anchorDate.getTime();
-    if (diffTime < 0) return 'even'; // Fallback for pre-anchor dates
-
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     const weeksPassed = Math.floor(diffDays / 7);
 
-    // Week 0 (Feb 2-8) is Even (2/4)
-    // Week 1 (Feb 9-15) is Odd (1/3)
-    return weeksPassed % 2 === 0 ? 'even' : 'odd';
+    // Even index of weeksPassed (0, 2, 4...) -> 'odd' (Week 1 / 3)
+    // Odd index of weeksPassed (1, 3, 5...) -> 'even' (Week 2 / 4)
+    return Math.abs(weeksPassed) % 2 === 0 ? 'odd' : 'even';
 }
 
 export function getFormatDate(date: Date = new Date()): string {
