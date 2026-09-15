@@ -129,62 +129,65 @@ export const BusTimingTab: React.FC = () => {
           key={idx}
           style={{
             display: 'flex',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '0.6rem 0.85rem',
+            padding: '0.65rem 0.85rem',
             background: isNext ? 'rgba(56, 189, 248, 0.12)' : 'rgba(255, 255, 255, 0.03)',
             border: isNext ? '1px solid rgba(56, 189, 248, 0.35)' : '1px solid rgba(255, 255, 255, 0.04)',
             borderRadius: 'var(--radius-md)',
-            opacity: isPast ? 0.55 : 1
+            opacity: isPast ? 0.7 : 1,
+            gap: '0.5rem'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1, minWidth: 0 }}>
             <span style={{
               fontSize: '0.92rem',
               fontWeight: 800,
               color: isNext ? 'var(--color-cyan)' : '#ffffff',
-              textDecoration: isPast ? 'line-through' : 'none'
+              textDecoration: isPast ? 'line-through' : 'none',
+              whiteSpace: 'nowrap'
             }}>
               {formatBusTime(bus.time)} {bus.isMultiple && '(m)'}
             </span>
             {isNext && (
-              <span className="badge badge-emerald" style={{ fontSize: '0.68rem', padding: '0.15rem 0.4rem' }}>
+              <span className="badge badge-emerald" style={{ fontSize: '0.68rem', padding: '0.15rem 0.4rem', flexShrink: 0 }}>
                 {diffStr}
               </span>
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
             <span style={{ fontSize: '0.75rem', color: isNext ? 'var(--color-cyan)' : isPast ? 'var(--text-sub)' : 'var(--text-muted)' }}>
               {isPast ? 'Departed' : isNext ? 'Next 🚍' : diffStr}
             </span>
 
-            {/* Alarm Toggle Button */}
-            {!isPast && (
-              <button
-                onClick={() => handleToggleAlarm(bus.time)}
-                title={hasAlarm ? 'Cancel Alarm' : 'Set Alarm (5m before)'}
-                style={{
-                  background: hasAlarm ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                  border: hasAlarm ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: '50%',
-                  width: '28px',
-                  height: '28px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  padding: 0
-                }}
-              >
-                <Bell 
-                  size={14} 
-                  color={hasAlarm ? 'var(--color-amber)' : 'var(--text-muted)'} 
-                  fill={hasAlarm ? 'var(--color-amber)' : 'none'} 
-                />
-              </button>
-            )}
+            {/* Touch-friendly Mobile Alarm Button */}
+            <button
+              onClick={() => handleToggleAlarm(bus.time)}
+              title={hasAlarm ? 'Cancel Alarm' : 'Set Alarm (5m before)'}
+              aria-label={hasAlarm ? 'Cancel Alarm' : 'Set Alarm'}
+              style={{
+                background: hasAlarm ? 'rgba(245, 158, 11, 0.25)' : 'rgba(56, 189, 248, 0.12)',
+                border: hasAlarm ? '1px solid rgba(245, 158, 11, 0.5)' : '1px solid rgba(56, 189, 248, 0.25)',
+                borderRadius: 'var(--radius-pill)',
+                padding: '0.3rem 0.55rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                color: hasAlarm ? 'var(--color-amber)' : 'var(--color-cyan)',
+                fontSize: '0.72rem',
+                fontWeight: 700
+              }}
+            >
+              <Bell 
+                size={14} 
+                color={hasAlarm ? 'var(--color-amber)' : 'var(--color-cyan)'} 
+                fill={hasAlarm ? 'var(--color-amber)' : 'none'} 
+              />
+              <span>{hasAlarm ? 'Alarm On' : 'Alarm'}</span>
+            </button>
           </div>
         </div>
       );

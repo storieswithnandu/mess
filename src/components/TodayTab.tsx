@@ -163,19 +163,23 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
             <MapPin size={13} color="var(--color-cyan)" />
             Kedaram Mess
           </div>
-          <button style={{
-            background: 'var(--bg-surface)',
-            border: 'var(--border-subtle)',
-            width: '34px',
-            height: '34px',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--text-main)',
-            cursor: 'pointer'
-          }}>
-            <Bell size={16} />
+          <button 
+            onClick={onNavigateToBus}
+            title="Bus Timings & Alarms"
+            style={{
+              background: 'var(--bg-surface)',
+              border: 'var(--border-subtle)',
+              width: '34px',
+              height: '34px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-main)',
+              cursor: 'pointer'
+            }}
+          >
+            <Bell size={16} color="var(--color-cyan)" />
           </button>
         </div>
       </header>
@@ -209,24 +213,28 @@ export const TodayTab: React.FC<TodayTabProps> = ({ onNavigateToBus, onNavigateT
             <button
               onClick={handleToggleNextBusAlarm}
               title={alarmActive ? 'Cancel Alarm' : 'Set Alarm (5m before)'}
+              aria-label={alarmActive ? 'Cancel Alarm' : 'Set Alarm'}
               style={{
-                background: alarmActive ? 'rgba(245, 158, 11, 0.25)' : 'rgba(255, 255, 255, 0.08)',
-                border: alarmActive ? '1px solid rgba(245, 158, 11, 0.4)' : 'none',
-                borderRadius: '50%',
-                width: '26px',
-                height: '26px',
+                background: alarmActive ? 'rgba(245, 158, 11, 0.25)' : 'rgba(56, 189, 248, 0.15)',
+                border: alarmActive ? '1px solid rgba(245, 158, 11, 0.5)' : '1px solid rgba(56, 189, 248, 0.3)',
+                borderRadius: 'var(--radius-pill)',
+                padding: '0.25rem 0.55rem',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
+                gap: '0.3rem',
                 cursor: 'pointer',
-                padding: 0
+                transition: 'all 0.2s ease',
+                color: alarmActive ? 'var(--color-amber)' : 'var(--color-cyan)',
+                fontSize: '0.7rem',
+                fontWeight: 700
               }}
             >
               <Bell 
-                size={13} 
-                color={alarmActive ? 'var(--color-amber)' : '#ffffff'} 
+                size={12} 
+                color={alarmActive ? 'var(--color-amber)' : 'var(--color-cyan)'} 
                 fill={alarmActive ? 'var(--color-amber)' : 'none'} 
               />
+              <span>{alarmActive ? 'Alarm On' : 'Alarm'}</span>
             </button>
           </div>
         </div>
